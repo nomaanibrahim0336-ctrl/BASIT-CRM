@@ -136,6 +136,12 @@ export function useMonthlyPnL(filters: Record<string, string> = {}) {
   });
 }
 
+export function useSyncSheets() {
+  return useMutation({
+    mutationFn: () => apiFetch("/api/sync-sheets", { method: "POST" }),
+  });
+}
+
 export function useRecalculatePnL() {
   const queryClient = useQueryClient();
 

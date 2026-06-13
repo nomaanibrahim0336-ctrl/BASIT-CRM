@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus } from "lucide-react";
+import { Plus, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/table";
 import { TeamMemberForm } from "@/components/team/TeamMemberForm";
 import { useTeamMembers } from "@/hooks/useTeam";
+import { useSyncSheets } from "@/hooks/useFinances";
+import { useToast } from "@/hooks/use-toast";
 import { MEMBER_STATUS_LABELS, ROLE_LABELS } from "@/lib/constants";
 import { formatCurrency } from "@/lib/utils";
 import { MemberStatus } from "@/types/enums";
@@ -24,15 +26,32 @@ export default function TeamPage() {
   const router = useRouter();
   const { data, isLoading } = useTeamMembers();
   const [formOpen, setFormOpen] = useState(false);
+  const { toast } = useToast();
+  const syncSheets = useSyncSheets();
+
+  async function handleSync() {
+    try {
+      await syncSheets.mutateAsync();
+      toast({ title: "Synced to Google Sheets" });
+    } catch (error: any) {
+      toast({ title: "Sync failed", description: error.message, variant: "destructive" });
+    }
+  }
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold">Team</h1>
-        <Button onClick={() => setFormOpen(true)}>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Member
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={handleSync} disabled={syncSheets.isPending}>
+            <RefreshCw className="mr-2 h-4 w-4" />
+            Sync to Sheets
+          </Button>
+          <Button onClick={() => setFormOpen(true)}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add Member
+          </Button>
+        </div>
       </div>
 
       {isLoading ? (
