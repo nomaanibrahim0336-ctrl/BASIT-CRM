@@ -1,5 +1,6 @@
-// This is a placeholder Prisma schema for Phase 1 (frontend scaffold).
-// The complete schema with all enums, models, and indexes will be added in Step 9.
+// Prisma schema for the Graphic Business CRM
+// Run `npx prisma generate` after changes, and `npx prisma db push` (dev) or
+// `npx prisma migrate dev` (production) to sync with Supabase Postgres.
 
 generator client {
   provider = "prisma-client-js"
@@ -11,7 +12,282 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-// Placeholder model — full schema (Team, Lead, Deal, etc.) added in Step 9.
-model Placeholder {
-  id String @id @default(uuid())
+// ─── ENUMS ──────────────────────────────────────────────────────────────────
+
+enum UserRole {
+  admin
+  lead_generator
+  sales_closer
+  designer
+  merchant
+}
+
+enum MemberStatus {
+  active
+  inactive
+}
+
+enum LeadStatus {
+  new
+  contacted
+  qualified
+  not_interested
+}
+
+enum LeadSource {
+  discord_dm
+  discord_server
+  referral
+  social_media
+  other
+}
+
+enum ServiceType {
+  logo
+  social_media
+  brand_kit
+  print
+  ui_design
+  other
+}
+
+enum DealStage {
+  won
+  design_briefed
+  in_progress
+  in_revision
+  delivered
+  completed
+  cancelled
+}
+
+enum BalanceStatus {
+  pending
+  received
+  not_paid
+}
+
+enum Priority {
+  high
+  medium
+  low
+}
+
+enum SplitType {
+  fixed_salary
+  commission
+  bonus
+}
+
+enum PayPeriod {
+  weekly
+  biweekly
+  monthly
+}
+
+enum PaidStatus {
+  unpaid
+  paid
+}
+
+enum ExpenseCategory {
+  software_tools
+  advertising
+  freelancers
+  hosting
+  office
+  travel
+  other
+}
+
+enum ExpenseType {
+  fixed
+  variable
+}
+
+enum PaymentType {
+  upfront
+  balance
+  full_payment
+}
+
+enum PaymentMethod {
+  bank_transfer
+  paypal
+  crypto
+  other
+}
+
+// ─── MODELS ─────────────────────────────────────────────────────────────────
+
+model Team {
+  id               String       @id @default(uuid())
+  fullName         String       @map("full_name")
+  discordUsername  String       @map("discord_username")
+  email            String       @unique
+  role             UserRole
+  status           MemberStatus @default(active)
+  fixedSalary      Decimal?     @map("fixed_salary") @db.Decimal(10, 2)
+  commissionRate   Decimal?     @map("commission_rate") @db.Decimal(5, 2)
+  joinedDate       DateTime     @default(now()) @map("joined_date")
+  authUserId       String?      @unique @map("auth_user_id")
+  notes            String?
+  createdAt        DateTime     @default(now()) @map("created_at")
+  updatedAt        DateTime     @updatedAt @map("updated_at")
+
+  generatedLeads   Lead[]        @relation("LeadGenerator")
+  assignedLeads    Lead[]        @relation("AssignedCloser")
+  dealsAsDesigner  Deal[]        @relation("AssignedDesigner")
+  dealsAsCloser    Deal[]        @relation("AssignedCloserDeal")
+  salarySplits     SalarySplit[]
+  expenses         Expense[]
+  revenueHandled   RevenueLog[]
+
+  @@map("teams")
+}
+
+model Lead {
+  id               String      @id @default(uuid())
+  clientName       String      @map("client_name")
+  companyName      String?     @map("company_name")
+  discordUsername  String      @map("discord_username")
+  contactInfo      String?     @map("contact_info")
+  serviceNeeded    ServiceType @map("service_needed")
+  leadSource       LeadSource  @map("lead_source")
+  leadStatus       LeadStatus  @default(new) @map("lead_status")
+  notes            String?
+  createdAt        DateTime    @default(now()) @map("created_at")
+  updatedAt        DateTime    @updatedAt @map("updated_at")
+
+  assignedCloserId String?     @map("assigned_closer_id")
+  generatedById    String      @map("generated_by_id")
+
+  assignedCloser   Team?       @relation("AssignedCloser", fields: [assignedCloserId], references: [id])
+  generatedBy      Team        @relation("LeadGenerator", fields: [generatedById], references: [id])
+  deals            Deal[]
+
+  @@index([assignedCloserId])
+  @@index([generatedById])
+  @@index([leadStatus])
+  @@map("leads")
+}
+
+model Deal {
+  id                  String        @id @default(uuid())
+  dealName            String        @map("deal_name")
+  discordChannel      String?       @map("discord_channel")
+  serviceType         ServiceType   @map("service_type")
+  dealValue           Decimal       @map("deal_value") @db.Decimal(10, 2)
+  upfrontPayment      Decimal       @map("upfront_payment") @db.Decimal(10, 2)
+  balancePayment      Decimal       @map("balance_payment") @db.Decimal(10, 2)
+  balanceStatus       BalanceStatus @default(pending) @map("balance_status")
+  dealStage           DealStage     @default(won) @map("deal_stage")
+  briefLink           String?       @map("brief_link")
+  deadline            DateTime?
+  dateWon             DateTime      @default(now()) @map("date_won")
+  dateDelivered       DateTime?     @map("date_delivered")
+  priority            Priority      @default(medium)
+  notes               String?
+  createdAt           DateTime      @default(now()) @map("created_at")
+  updatedAt           DateTime      @updatedAt @map("updated_at")
+
+  leadId              String        @map("lead_id")
+  assignedDesignerId  String?       @map("assigned_designer_id")
+  assignedCloserId    String?       @map("assigned_closer_id_deal")
+
+  lead                Lead          @relation(fields: [leadId], references: [id])
+  assignedDesigner    Team?         @relation("AssignedDesigner", fields: [assignedDesignerId], references: [id])
+  assignedCloser      Team?         @relation("AssignedCloserDeal", fields: [assignedCloserId], references: [id])
+  salarySplits        SalarySplit[]
+  revenueLogs         RevenueLog[]
+
+  @@index([leadId])
+  @@index([assignedDesignerId])
+  @@index([assignedCloserId])
+  @@index([dealStage])
+  @@index([balanceStatus])
+  @@map("deals")
+}
+
+model SalarySplit {
+  id              String     @id @default(uuid())
+  splitType       SplitType  @map("split_type")
+  splitAmount     Decimal    @map("split_amount") @db.Decimal(10, 2)
+  splitPercentage Decimal?   @map("split_percentage") @db.Decimal(5, 2)
+  payPeriod       PayPeriod  @map("pay_period")
+  paidStatus      PaidStatus @default(unpaid) @map("paid_status")
+  datePaid        DateTime?  @map("date_paid")
+  notes           String?
+  createdAt       DateTime   @default(now()) @map("created_at")
+
+  teamMemberId    String     @map("team_member_id")
+  dealId          String     @map("deal_id")
+
+  teamMember      Team       @relation(fields: [teamMemberId], references: [id])
+  deal            Deal       @relation(fields: [dealId], references: [id])
+
+  @@index([teamMemberId])
+  @@index([dealId])
+  @@index([paidStatus])
+  @@map("salary_splits")
+}
+
+model Expense {
+  id            String          @id @default(uuid())
+  category      ExpenseCategory
+  expenseType   ExpenseType     @map("expense_type")
+  description   String
+  amount        Decimal         @db.Decimal(10, 2)
+  dateIncurred  DateTime        @map("date_incurred")
+  receiptLink   String?         @map("receipt_link")
+  notes         String?
+  createdAt     DateTime        @default(now()) @map("created_at")
+
+  paidById      String?         @map("paid_by_id")
+  paidBy        Team?           @relation(fields: [paidById], references: [id])
+
+  @@index([paidById])
+  @@index([dateIncurred])
+  @@index([category])
+  @@map("expenses")
+}
+
+model RevenueLog {
+  id              String        @id @default(uuid())
+  amountReceived  Decimal       @map("amount_received") @db.Decimal(10, 2)
+  paymentType     PaymentType   @map("payment_type")
+  dateReceived    DateTime      @map("date_received")
+  paymentMethod   PaymentMethod @map("payment_method")
+  confirmed       Boolean       @default(false)
+  notes           String?
+  createdAt       DateTime      @default(now()) @map("created_at")
+
+  dealId          String        @map("deal_id")
+  handledById     String        @map("handled_by_id")
+
+  deal            Deal          @relation(fields: [dealId], references: [id])
+  handledBy       Team          @relation(fields: [handledById], references: [id])
+
+  @@index([dealId])
+  @@index([handledById])
+  @@index([dateReceived])
+  @@map("revenue_log")
+}
+
+model MonthlyPnL {
+  id                     String   @id @default(uuid())
+  month                  String
+  year                   Int
+  totalRevenue           Decimal  @map("total_revenue") @db.Decimal(12, 2)
+  totalFixedExpenses     Decimal  @map("total_fixed_expenses") @db.Decimal(12, 2)
+  totalVariableExpenses  Decimal  @map("total_variable_expenses") @db.Decimal(12, 2)
+  totalSalaryPayouts     Decimal  @map("total_salary_payouts") @db.Decimal(12, 2)
+  netProfit              Decimal  @map("net_profit") @db.Decimal(12, 2)
+  profitMarginPct        Decimal  @map("profit_margin_pct") @db.Decimal(6, 2)
+  notes                  String?
+  createdAt              DateTime @default(now()) @map("created_at")
+
+  @@unique([month, year])
+  @@index([year, month])
+  @@map("monthly_pnl")
 }
