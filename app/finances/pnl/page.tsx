@@ -1,8 +1,121 @@
-export default function Page() {
+"use client";
+
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { useMonthlyPnL } from "@/hooks/useFinances";
+import { formatCurrency, formatPercent } from "@/lib/utils";
+
+export default function PnLPage() {
+  const { data, isLoading } = useMonthlyPnL();
+
+  const records = (data?.data ?? []).slice().reverse();
+  const chartData = records.map((r) => ({
+    label: `${r.month} ${r.year}`,
+    revenue: r.totalRevenue,
+    expenses: r.totalFixedExpenses + r.totalVariableExpenses + r.totalSalaryPayouts,
+    netProfit: r.netProfit,
+  }));
+
   return (
-    <div className="p-6">
-      <h1 className="text-xl font-semibold">Coming soon</h1>
-      <p className="text-muted-foreground text-sm mt-1">This page will be built in a later step.</p>
+    <div className="space-y-4">
+      <h1 className="text-xl font-semibold">Profit &amp; Loss</h1>
+
+      {isLoading ? (
+        <Skeleton className="h-96 w-full" />
+      ) : (
+        <>
+          <Card className="border-discord-border bg-discord-card">
+            <CardHeader>
+              <CardTitle className="text-base">Revenue vs Expenses vs Net Profit</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#36373d" />
+                  <XAxis dataKey="label" stroke="#9ca3af" fontSize={12} />
+                  <YAxis stroke="#9ca3af" fontSize={12} />
+                  <Tooltip contentStyle={{ backgroundColor: "#23242a", border: "1px solid #36373d" }} />
+                  <Bar dataKey="revenue" fill="#22c55e" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="expenses" fill="#ef4444" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="netProfit" fill="#5865f2" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          <Card className="border-discord-border bg-discord-card">
+            <CardHeader>
+              <CardTitle className="text-base">Profit Margin Trend</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={250}>
+                <LineChart data={records.map((r) => ({ label: `${r.month} ${r.year}`, margin: r.profitMarginPct }))}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#36373d" />
+                  <XAxis dataKey="label" stroke="#9ca3af" fontSize={12} />
+                  <YAxis stroke="#9ca3af" fontSize={12} />
+                  <Tooltip contentStyle={{ backgroundColor: "#23242a", border: "1px solid #36373d" }} />
+                  <Line type="monotone" dataKey="margin" stroke="#5865f2" strokeWidth={2} />
+                </LineChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Month</TableHead>
+                <TableHead>Revenue</TableHead>
+                <TableHead>Fixed Expenses</TableHead>
+                <TableHead>Variable Expenses</TableHead>
+                <TableHead>Salary Payouts</TableHead>
+                <TableHead>Net Profit</TableHead>
+                <TableHead>Margin</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {(data?.data ?? []).map((row) => (
+                <TableRow key={row.id}>
+                  <TableCell className="font-medium">
+                    {row.month} {row.year}
+                  </TableCell>
+                  <TableCell>{formatCurrency(row.totalRevenue)}</TableCell>
+                  <TableCell>{formatCurrency(row.totalFixedExpenses)}</TableCell>
+                  <TableCell>{formatCurrency(row.totalVariableExpenses)}</TableCell>
+                  <TableCell>{formatCurrency(row.totalSalaryPayouts)}</TableCell>
+                  <TableCell>{formatCurrency(row.netProfit)}</TableCell>
+                  <TableCell>{formatPercent(row.profitMarginPct)}</TableCell>
+                </TableRow>
+              ))}
+              {(data?.data ?? []).length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center text-muted-foreground py-6">
+                    No P&amp;L records yet. Records are generated monthly.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </>
+      )}
     </div>
   );
 }
