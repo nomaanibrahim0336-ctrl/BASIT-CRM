@@ -135,3 +135,13 @@ export function useMonthlyPnL(filters: Record<string, string> = {}) {
     queryFn: () => apiFetch<PaginatedResponse<MonthlyPnL>>(`/api/finance/pnl?${params.toString()}`),
   });
 }
+
+export function useRecalculatePnL() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () =>
+      apiFetch<MonthlyPnL>("/api/finance/calculate-pnl", { method: "POST", body: JSON.stringify({}) }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["pnl"] }),
+  });
+}

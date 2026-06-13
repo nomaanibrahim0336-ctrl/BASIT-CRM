@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/calculate-pnl",
+      "schedule": "0 0 1 * *"
+    }
+  ]
+}

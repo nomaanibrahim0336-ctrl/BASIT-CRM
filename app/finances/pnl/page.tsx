@@ -21,11 +21,22 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useMonthlyPnL } from "@/hooks/useFinances";
+import { Button } from "@/components/ui/button";
+import { RefreshCw } from "lucide-react";
+import { useMonthlyPnL, useRecalculatePnL } from "@/hooks/useFinances";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 import { formatCurrency, formatPercent } from "@/lib/utils";
+import { UserRole } from "@/types/enums";
 
 export default function PnLPage() {
   const { data, isLoading } = useMonthlyPnL();
+  const { teamMember } = useAuth();
+  const { toast } = useToast();
+  const recalculate = useRecalculatePnL();
+
+  const canRecalculate =
+    teamMember?.role === UserRole.ADMIN || teamMember?.role === UserRole.MERCHANT;
 
   const records = (data?.data ?? []).slice().reverse();
   const chartData = records.map((r) => ({
@@ -35,9 +46,26 @@ export default function PnLPage() {
     netProfit: r.netProfit,
   }));
 
+  async function handleRecalculate() {
+    try {
+      await recalculate.mutateAsync();
+      toast({ title: "P&L recalculated for the current month" });
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    }
+  }
+
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-semibold">Profit &amp; Loss</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-xl font-semibold">Profit &amp; Loss</h1>
+        {canRecalculate && (
+          <Button variant="outline" onClick={handleRecalculate} disabled={recalculate.isPending}>
+            <RefreshCw className="mr-2 h-4 w-4" />
+            Recalculate Current Month
+          </Button>
+        )}
+      </div>
 
       {isLoading ? (
         <Skeleton className="h-96 w-full" />
