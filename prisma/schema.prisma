@@ -1,0 +1,17 @@
+// This is a placeholder Prisma schema for Phase 1 (frontend scaffold).
+// The complete schema with all enums, models, and indexes will be added in Step 9.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// Placeholder model — full schema (Team, Lead, Deal, etc.) added in Step 9.
+model Placeholder {
+  id String @id @default(uuid())
+}
