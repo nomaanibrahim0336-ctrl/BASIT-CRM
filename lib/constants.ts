@@ -5,6 +5,7 @@ import {
   ExpenseType,
   LeadSource,
   LeadStatus,
+  MemberStatus,
   PaidStatus,
   PayPeriod,
   PaymentMethod,
@@ -115,6 +116,11 @@ export const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
 };
 
 // Role-based sidebar navigation map
+export const MEMBER_STATUS_LABELS: Record<MemberStatus, string> = {
+  [MemberStatus.ACTIVE]: "Active",
+  [MemberStatus.INACTIVE]: "Inactive",
+};
+
 export const ROLE_NAV_ACCESS: Record<UserRole, string[]> = {
   [UserRole.ADMIN]: [
     "dashboard",
