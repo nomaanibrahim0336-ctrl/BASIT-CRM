@@ -51,7 +51,11 @@ export function handleApiError(error: unknown) {
 
   console.error(error);
   return NextResponse.json(
-    { error: "Internal server error", status: 500 },
+    {
+      error: "Internal server error",
+      status: 500,
+      debug: error instanceof Error ? error.message : String(error),
+    },
     { status: 500 }
   );
 }
