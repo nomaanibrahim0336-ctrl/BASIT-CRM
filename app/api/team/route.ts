@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { createAdminClient } from "@/lib/supabase-server";
 import {
+  ApiError,
   buildPaginatedResponse,
   handleApiError,
   parsePagination,
@@ -49,11 +51,29 @@ export async function POST(request: NextRequest) {
     validateRole(teamMember, [UserRole.ADMIN]);
 
     const body = await request.json();
-    const parsed = teamCreateSchema.parse(body);
+    const { password, ...parsed } = teamCreateSchema.parse(body);
+
+    let authUserId = parsed.authUserId ?? null;
+
+    if (password) {
+      const admin = createAdminClient();
+      const { data, error } = await admin.auth.admin.createUser({
+        email: parsed.email,
+        password,
+        email_confirm: true,
+      });
+
+      if (error || !data.user) {
+        throw new ApiError(error?.message ?? "Failed to create login account", 400);
+      }
+
+      authUserId = data.user.id;
+    }
 
     const created = await prisma.team.create({
       data: {
         ...parsed,
+        authUserId,
         role: parsed.role as any,
         status: parsed.status as any,
       },

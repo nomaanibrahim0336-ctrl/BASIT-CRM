@@ -108,6 +108,7 @@ export const teamCreateSchema = z.object({
   joinedDate: z.string().datetime().optional(),
   authUserId: z.string().uuid().optional().nullable(),
   notes: z.string().optional().nullable(),
+  password: z.string().min(6).optional(),
 });
 
 export const teamUpdateSchema = teamCreateSchema.partial();

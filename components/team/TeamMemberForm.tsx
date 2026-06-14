@@ -52,6 +52,7 @@ export function TeamMemberForm({ open, onOpenChange, member }: TeamMemberFormPro
     fixedSalary: member?.fixedSalary ?? null,
     commissionRate: member?.commissionRate ?? null,
     notes: member?.notes ?? "",
+    password: "",
   });
 
   const {
@@ -75,6 +76,7 @@ export function TeamMemberForm({ open, onOpenChange, member }: TeamMemberFormPro
         ...values,
         fixedSalary: values.fixedSalary != null ? Number(values.fixedSalary) : null,
         commissionRate: values.commissionRate != null ? Number(values.commissionRate) : null,
+        password: values.password || undefined,
       };
 
       if (member) {
@@ -192,6 +194,22 @@ export function TeamMemberForm({ open, onOpenChange, member }: TeamMemberFormPro
             <Label htmlFor="notes">Notes</Label>
             <Textarea id="notes" {...register("notes")} />
           </div>
+
+          {!member && (
+            <div className="space-y-2">
+              <Label htmlFor="password">Login Password (optional)</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="Leave blank for no login access"
+                autoComplete="new-password"
+                {...register("password")}
+              />
+              {errors.password && (
+                <p className="text-sm text-destructive">{errors.password.message}</p>
+              )}
+            </div>
+          )}
 
           <div className="flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
