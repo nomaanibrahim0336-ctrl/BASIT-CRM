@@ -48,7 +48,7 @@ export function Sidebar({ role }: SidebarProps) {
           <Image src="/logo.jpg" alt="Bizmatic Solutions" width={36} height={36} className="h-full w-full object-cover" />
         </div>
         <div className="leading-tight">
-          <span className="block text-sm font-semibold text-white">Graphic CRM</span>
+          <span className="block text-sm font-semibold text-white">Krea8Digital</span>
           <span className="block text-[11px] text-slate-400">by Bizmatic Solutions</span>
         </div>
       </div>

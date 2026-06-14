@@ -3,7 +3,7 @@ import { Providers } from "@/components/providers";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Graphic Business CRM",
+  title: "Krea8Digital",
   description: "Operations dashboard for the graphic design selling business",
 };
 

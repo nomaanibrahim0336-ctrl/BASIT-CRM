@@ -68,7 +68,7 @@ export default function LoginPage() {
             <Image src="/logo.jpg" alt="Bizmatic Solutions" width={56} height={56} className="h-full w-full object-cover" />
           </div>
           <CardTitle className="text-xl">
-            <span className="text-gradient-blue">Graphic Business CRM</span>
+            <span className="text-gradient-blue">Krea8Digital</span>
           </CardTitle>
           <CardDescription>Sign in to your account</CardDescription>
         </CardHeader>
