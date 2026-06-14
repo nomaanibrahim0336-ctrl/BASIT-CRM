@@ -54,7 +54,6 @@ export function handleApiError(error: unknown) {
     {
       error: "Internal server error",
       status: 500,
-      debug: error instanceof Error ? error.message : String(error),
     },
     { status: 500 }
   );
