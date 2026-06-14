@@ -69,12 +69,12 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const parsed = leadCreateSchema.parse(body);
 
+    // Lead generators always own their own leads. Admins may attribute the
+    // lead to a specific generator, otherwise it defaults to the admin.
     const generatedById =
-      teamMember.role === UserRole.LEAD_GENERATOR ? teamMember.id : parsed.generatedById;
-
-    if (!generatedById) {
-      throw new ApiError("generatedById is required", 400);
-    }
+      teamMember.role === UserRole.LEAD_GENERATOR
+        ? teamMember.id
+        : parsed.generatedById ?? teamMember.id;
 
     const lead = await prisma.lead.create({
       data: {
