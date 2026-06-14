@@ -80,7 +80,7 @@ export function StatCard({
         )}
       </div>
 
-      <div className="mt-3 text-3xl font-bold tracking-tight text-white">
+      <div className="mt-3 text-3xl font-bold tracking-tight text-white tabular-nums">
         {value}
       </div>
       {description && (

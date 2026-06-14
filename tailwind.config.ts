@@ -64,14 +64,33 @@ const config: Config = {
           900: "#1e3a8a",
         },
       },
+      fontFamily: {
+        sans: [
+          "var(--font-sans)",
+          "ui-sans-serif",
+          "system-ui",
+          "-apple-system",
+          "Segoe UI",
+          "Roboto",
+          "Helvetica Neue",
+          "Arial",
+          "sans-serif",
+        ],
+      },
       backgroundImage: {
         "brand-gradient": "linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%)",
         "brand-gradient-soft": "linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%)",
       },
       borderRadius: {
+        xl: "calc(var(--radius) + 4px)",
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      boxShadow: {
+        soft: "0 1px 2px 0 rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.6)",
+        "soft-lg": "0 4px 12px -2px rgba(0,0,0,0.4), 0 16px 40px -16px rgba(0,0,0,0.7)",
+        "brand-glow": "0 8px 24px -8px rgba(59,130,246,0.5)",
       },
     },
   },

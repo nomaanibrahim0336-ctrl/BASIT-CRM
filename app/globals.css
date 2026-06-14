@@ -45,12 +45,55 @@
   * {
     @apply border-border;
   }
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "cv11", "ss01", "cv02", "cv03", "cv04";
     background-image:
       radial-gradient(ellipse 80% 60% at 50% -10%, hsl(217 91% 60% / 0.12), transparent),
       radial-gradient(ellipse 60% 50% at 100% 0%, hsl(224 76% 48% / 0.08), transparent);
     background-attachment: fixed;
+  }
+
+  /* Tighter, more confident headings */
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply tracking-tight;
+    font-feature-settings: "ss01", "cv11";
+  }
+
+  /* Tabular figures for numbers/stats so columns align cleanly */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Refined text selection */
+  ::selection {
+    background: hsl(217 91% 60% / 0.3);
+    color: #fff;
+  }
+
+  /* Slim, themed scrollbars */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(217 33% 30%) transparent;
+  }
+  *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  *::-webkit-scrollbar-thumb {
+    background: hsl(217 33% 28%);
+    border-radius: 9999px;
+  }
+  *::-webkit-scrollbar-thumb:hover {
+    background: hsl(217 33% 38%);
   }
 }
 
