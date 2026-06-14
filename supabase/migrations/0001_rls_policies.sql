@@ -11,7 +11,7 @@ security definer
 stable
 set search_path = public
 as $$
-  select role from teams where auth_user_id = auth.uid();
+  select role from teams where auth_user_id = auth.uid()::text;
 $$;
 
 -- Returns the team member id of the currently authenticated user.
@@ -22,7 +22,7 @@ security definer
 stable
 set search_path = public
 as $$
-  select id from teams where auth_user_id = auth.uid();
+  select id from teams where auth_user_id = auth.uid()::text;
 $$;
 
 -- ─── ENABLE RLS ─────────────────────────────────────────────────────────────
@@ -51,8 +51,8 @@ create policy "teams_select_authenticated" on teams
 -- Team members can update their own profile (notes/contact info).
 create policy "teams_update_own" on teams
   for update
-  using (auth_user_id = auth.uid())
-  with check (auth_user_id = auth.uid());
+  using (auth_user_id = auth.uid()::text)
+  with check (auth_user_id = auth.uid()::text);
 
 -- ─── LEADS ──────────────────────────────────────────────────────────────────
 
