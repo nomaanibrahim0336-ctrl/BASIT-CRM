@@ -18,7 +18,7 @@ export function DesignerDealCard({ deal }: { deal: Deal }) {
 
   return (
     <Card
-      className="border-discord-border bg-discord-card cursor-pointer hover:bg-discord-bg transition-colors"
+      className="border-white/[0.06] bg-card/80 cursor-pointer transition-all hover:border-white/10 hover:-translate-y-0.5"
       onClick={() => router.push(`/deals/${deal.id}`)}
     >
       <CardContent className="p-4 space-y-2">
@@ -37,7 +37,7 @@ export function DesignerDealCard({ deal }: { deal: Deal }) {
             target="_blank"
             rel="noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className="text-sm text-discord-accent hover:underline"
+            className="text-sm text-brand-400 hover:underline"
           >
             View Brief
           </a>

@@ -78,7 +78,7 @@ export default function DealDetailPage() {
         )}
       </div>
 
-      <Card className="border-discord-border bg-discord-card">
+      <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg">{deal.dealName}</CardTitle>
@@ -106,7 +106,7 @@ export default function DealDetailPage() {
                 href={deal.briefLink}
                 target="_blank"
                 rel="noreferrer"
-                className="text-sm font-medium text-discord-accent hover:underline"
+                className="text-sm font-medium text-brand-400 hover:underline"
               >
                 {deal.briefLink}
               </a>

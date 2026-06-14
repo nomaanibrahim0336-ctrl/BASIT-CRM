@@ -77,7 +77,7 @@ export default function LeadDetailPage() {
         )}
       </div>
 
-      <Card className="border-discord-border bg-discord-card">
+      <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg">{lead.clientName}</CardTitle>
@@ -103,7 +103,7 @@ export default function LeadDetailPage() {
       </Card>
 
       {lead.deals && lead.deals.length > 0 && (
-        <Card className="border-discord-border bg-discord-card">
+        <Card>
           <CardHeader>
             <CardTitle className="text-base">Related Deals</CardTitle>
           </CardHeader>
@@ -111,7 +111,7 @@ export default function LeadDetailPage() {
             {lead.deals.map((deal) => (
               <div
                 key={deal.id}
-                className="flex items-center justify-between rounded-md border border-discord-border p-3 cursor-pointer hover:bg-discord-bg"
+                className="flex items-center justify-between rounded-lg border border-white/[0.06] p-3 cursor-pointer transition-colors hover:bg-blue-500/[0.06] hover:border-white/10"
                 onClick={() => router.push(`/deals/${deal.id}`)}
               >
                 <div>

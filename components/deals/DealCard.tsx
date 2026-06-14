@@ -34,8 +34,8 @@ export function DealCard({ deal, index }: DealCardProps) {
           onClick={() => router.push(`/deals/${deal.id}`)}
         >
           <Card
-            className={`border-discord-border bg-discord-card cursor-pointer transition-shadow ${
-              snapshot.isDragging ? "shadow-lg ring-2 ring-discord-accent" : ""
+            className={`border-white/[0.06] bg-card/80 cursor-pointer transition-all hover:border-white/10 hover:-translate-y-0.5 ${
+              snapshot.isDragging ? "shadow-brand-glow ring-2 ring-brand-500" : ""
             }`}
           >
             <CardContent className="p-3 space-y-2">

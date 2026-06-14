@@ -71,7 +71,7 @@ export default function PnLPage() {
         <Skeleton className="h-96 w-full" />
       ) : (
         <>
-          <Card className="border-discord-border bg-discord-card">
+          <Card>
             <CardHeader>
               <CardTitle className="text-base">Revenue vs Expenses vs Net Profit</CardTitle>
             </CardHeader>
@@ -90,7 +90,7 @@ export default function PnLPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-discord-border bg-discord-card">
+          <Card>
             <CardHeader>
               <CardTitle className="text-base">Profit Margin Trend</CardTitle>
             </CardHeader>

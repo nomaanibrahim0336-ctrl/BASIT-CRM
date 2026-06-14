@@ -37,8 +37,8 @@ export function DealsKanban({ deals, onStageChange }: DealsKanbanProps) {
                   <div
                     ref={provided.innerRef}
                     {...provided.droppableProps}
-                    className={`flex min-h-[100px] flex-1 flex-col gap-2 rounded-md border border-discord-border p-2 ${
-                      snapshot.isDraggingOver ? "bg-discord-card" : "bg-discord-sidebar"
+                    className={`flex min-h-[100px] flex-1 flex-col gap-2 rounded-xl border border-white/[0.06] p-2 transition-colors ${
+                      snapshot.isDraggingOver ? "bg-blue-500/[0.06] border-blue-500/20" : "bg-white/[0.02]"
                     }`}
                   >
                     {stageDeals.map((deal, index) => (

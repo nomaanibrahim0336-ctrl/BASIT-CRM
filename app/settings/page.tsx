@@ -123,7 +123,7 @@ export default function SettingsPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
-          <div className="flex items-center justify-between rounded-md border border-discord-border p-3">
+          <div className="flex items-center justify-between rounded-lg border border-white/[0.06] p-3">
             <div>
               <p className="text-sm font-medium">Member Statuses</p>
               <p className="text-xs text-muted-foreground">
@@ -132,7 +132,7 @@ export default function SettingsPage() {
             </div>
             <Badge variant="outline">Read-only</Badge>
           </div>
-          <div className="flex items-center justify-between rounded-md border border-discord-border p-3">
+          <div className="flex items-center justify-between rounded-lg border border-white/[0.06] p-3">
             <div>
               <p className="text-sm font-medium">Roles & Permissions</p>
               <p className="text-xs text-muted-foreground">
@@ -141,7 +141,7 @@ export default function SettingsPage() {
             </div>
             <Badge variant="outline">Read-only</Badge>
           </div>
-          <div className="flex items-center justify-between rounded-md border border-discord-border p-3">
+          <div className="flex items-center justify-between rounded-lg border border-white/[0.06] p-3">
             <div>
               <p className="text-sm font-medium">Google Sheets Sync</p>
               <p className="text-xs text-muted-foreground">

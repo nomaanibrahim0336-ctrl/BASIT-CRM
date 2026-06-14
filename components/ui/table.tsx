@@ -12,7 +12,7 @@ Table.displayName = "Table";
 
 const TableHeader = React.forwardRef<HTMLTableSectionElement, React.HTMLAttributes<HTMLTableSectionElement>>(
   ({ className, ...props }, ref) => (
-    <thead ref={ref} className={cn("[&_tr]:border-b [&_tr]:border-discord-border", className)} {...props} />
+    <thead ref={ref} className={cn("[&_tr]:border-b [&_tr]:border-white/[0.06]", className)} {...props} />
   )
 );
 TableHeader.displayName = "TableHeader";
@@ -26,7 +26,7 @@ TableBody.displayName = "TableBody";
 
 const TableFooter = React.forwardRef<HTMLTableSectionElement, React.HTMLAttributes<HTMLTableSectionElement>>(
   ({ className, ...props }, ref) => (
-    <tfoot ref={ref} className={cn("border-t border-discord-border bg-discord-card/50 font-medium", className)} {...props} />
+    <tfoot ref={ref} className={cn("border-t border-white/[0.06] bg-white/[0.02] font-medium", className)} {...props} />
   )
 );
 TableFooter.displayName = "TableFooter";
@@ -36,7 +36,8 @@ const TableRow = React.forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTML
     <tr
       ref={ref}
       className={cn(
-        "border-b border-discord-border transition-colors hover:bg-discord-card/50 data-[state=selected]:bg-discord-card",
+        "border-b border-white/[0.06] transition-colors hover:bg-blue-500/[0.06] data-[state=selected]:bg-blue-500/10",
+        props.onClick && "cursor-pointer",
         className
       )}
       {...props}
@@ -50,7 +51,7 @@ const TableHead = React.forwardRef<HTMLTableCellElement, React.ThHTMLAttributes<
     <th
       ref={ref}
       className={cn(
-        "h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0",
+        "h-10 px-2 text-left align-middle text-xs font-semibold uppercase tracking-wide text-slate-400 [&:has([role=checkbox])]:pr-0",
         className
       )}
       {...props}
@@ -61,7 +62,7 @@ TableHead.displayName = "TableHead";
 
 const TableCell = React.forwardRef<HTMLTableCellElement, React.TdHTMLAttributes<HTMLTableCellElement>>(
   ({ className, ...props }, ref) => (
-    <td ref={ref} className={cn("p-2 align-middle [&:has([role=checkbox])]:pr-0", className)} {...props} />
+    <td ref={ref} className={cn("p-2 align-middle text-slate-200 [&:has([role=checkbox])]:pr-0", className)} {...props} />
   )
 );
 TableCell.displayName = "TableCell";

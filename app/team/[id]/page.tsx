@@ -68,7 +68,7 @@ export default function TeamMemberDetailPage() {
         )}
       </div>
 
-      <Card className="border-discord-border bg-discord-card">
+      <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg">{member.fullName}</CardTitle>
@@ -100,7 +100,7 @@ export default function TeamMemberDetailPage() {
       </Card>
 
       {data.dealsAsCloser && data.dealsAsCloser.length > 0 && (
-        <Card className="border-discord-border bg-discord-card">
+        <Card>
           <CardHeader>
             <CardTitle className="text-base">Deals as Closer</CardTitle>
           </CardHeader>
@@ -108,7 +108,7 @@ export default function TeamMemberDetailPage() {
             {data.dealsAsCloser.map((deal: any) => (
               <div
                 key={deal.id}
-                className="flex items-center justify-between rounded-md border border-discord-border p-3 cursor-pointer hover:bg-discord-bg"
+                className="flex items-center justify-between rounded-lg border border-white/[0.06] p-3 cursor-pointer transition-colors hover:bg-blue-500/[0.06] hover:border-white/10"
                 onClick={() => router.push(`/deals/${deal.id}`)}
               >
                 <div>
@@ -125,7 +125,7 @@ export default function TeamMemberDetailPage() {
       )}
 
       {data.dealsAsDesigner && data.dealsAsDesigner.length > 0 && (
-        <Card className="border-discord-border bg-discord-card">
+        <Card>
           <CardHeader>
             <CardTitle className="text-base">Deals as Designer</CardTitle>
           </CardHeader>
@@ -133,7 +133,7 @@ export default function TeamMemberDetailPage() {
             {data.dealsAsDesigner.map((deal: any) => (
               <div
                 key={deal.id}
-                className="flex items-center justify-between rounded-md border border-discord-border p-3 cursor-pointer hover:bg-discord-bg"
+                className="flex items-center justify-between rounded-lg border border-white/[0.06] p-3 cursor-pointer transition-colors hover:bg-blue-500/[0.06] hover:border-white/10"
                 onClick={() => router.push(`/deals/${deal.id}`)}
               >
                 <div>
@@ -150,7 +150,7 @@ export default function TeamMemberDetailPage() {
       )}
 
       {data.generatedLeads && data.generatedLeads.length > 0 && (
-        <Card className="border-discord-border bg-discord-card">
+        <Card>
           <CardHeader>
             <CardTitle className="text-base">Generated Leads</CardTitle>
           </CardHeader>
@@ -158,7 +158,7 @@ export default function TeamMemberDetailPage() {
             {data.generatedLeads.map((lead: any) => (
               <div
                 key={lead.id}
-                className="flex items-center justify-between rounded-md border border-discord-border p-3 cursor-pointer hover:bg-discord-bg"
+                className="flex items-center justify-between rounded-lg border border-white/[0.06] p-3 cursor-pointer transition-colors hover:bg-blue-500/[0.06] hover:border-white/10"
                 onClick={() => router.push(`/leads/${lead.id}`)}
               >
                 <p className="font-medium">{lead.clientName}</p>
