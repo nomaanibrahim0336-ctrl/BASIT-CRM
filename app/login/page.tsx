@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -60,10 +61,11 @@ export default function LoginPage() {
       <div className="pointer-events-none absolute -top-24 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-blue-600/20 blur-3xl" />
       <div className="pointer-events-none absolute bottom-0 right-0 h-80 w-80 rounded-full bg-indigo-600/10 blur-3xl" />
 
-      <Card className="surface-card w-full max-w-sm">
+      <div className="relative flex w-full max-w-sm flex-col items-center">
+      <Card className="surface-card w-full">
         <CardHeader className="items-center text-center">
-          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-brand-gradient text-lg font-bold text-white shadow-lg shadow-blue-900/40">
-            GC
+          <div className="mb-3 flex h-14 w-14 items-center justify-center overflow-hidden rounded-xl bg-white shadow-lg shadow-blue-900/40">
+            <Image src="/logo.jpg" alt="Bizmatic Solutions" width={56} height={56} className="h-full w-full object-cover" />
           </div>
           <CardTitle className="text-xl">
             <span className="text-gradient-blue">Graphic Business CRM</span>
@@ -109,6 +111,10 @@ export default function LoginPage() {
           </form>
         </CardContent>
       </Card>
+      <p className="mt-4 text-xs text-slate-500">
+        Provided by <span className="font-semibold text-blue-300">Bizmatic Solutions</span>
+      </p>
+      </div>
     </div>
   );
 }

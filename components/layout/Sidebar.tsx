@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
@@ -43,12 +44,12 @@ export function Sidebar({ role }: SidebarProps) {
   return (
     <aside className="hidden w-64 flex-col border-r border-white/5 bg-discord-sidebar/80 backdrop-blur-sm md:flex">
       <div className="flex h-16 items-center gap-2.5 border-b border-white/5 px-5">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-gradient text-sm font-bold text-white shadow-lg shadow-blue-900/40">
-          GC
+        <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-lg bg-white shadow-lg shadow-blue-900/40">
+          <Image src="/logo.jpg" alt="Bizmatic Solutions" width={36} height={36} className="h-full w-full object-cover" />
         </div>
         <div className="leading-tight">
           <span className="block text-sm font-semibold text-white">Graphic CRM</span>
-          <span className="block text-[11px] text-slate-400">Business Suite</span>
+          <span className="block text-[11px] text-slate-400">by Bizmatic Solutions</span>
         </div>
       </div>
       <nav className="flex-1 space-y-1 p-3">
@@ -82,7 +83,9 @@ export function Sidebar({ role }: SidebarProps) {
         })}
       </nav>
       <div className="border-t border-white/5 p-4">
-        <p className="text-[11px] text-slate-500">© {new Date().getFullYear()} Graphic CRM</p>
+        <p className="text-[11px] text-slate-500">
+          © {new Date().getFullYear()} Bizmatic Solutions
+        </p>
       </div>
     </aside>
   );
