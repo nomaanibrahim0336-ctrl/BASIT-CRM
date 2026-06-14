@@ -12,6 +12,7 @@ import {
   Split,
   TrendingUp,
   UserCog,
+  Settings,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ROLE_NAV_ACCESS } from "@/lib/constants";
@@ -27,6 +28,7 @@ const NAV_ITEMS = [
   { key: "finances-salary-splits", label: "Salary Splits", href: "/finances/salary-splits", icon: Split },
   { key: "finances-pnl", label: "P&L", href: "/finances/pnl", icon: TrendingUp },
   { key: "team", label: "Team", href: "/team", icon: UserCog },
+  { key: "settings", label: "Settings", href: "/settings", icon: Settings },
 ];
 
 interface SidebarProps {

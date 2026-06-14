@@ -132,6 +132,7 @@ export const ROLE_NAV_ACCESS: Record<UserRole, string[]> = {
     "finances-salary-splits",
     "finances-pnl",
     "team",
+    "settings",
   ],
   [UserRole.LEAD_GENERATOR]: ["dashboard", "leads"],
   [UserRole.SALES_CLOSER]: ["dashboard", "leads", "deals"],
