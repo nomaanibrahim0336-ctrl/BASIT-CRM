@@ -5,7 +5,7 @@
 
 -- Returns the role of the currently authenticated user, looked up via teams.auth_user_id.
 create or replace function get_user_role()
-returns user_role
+returns "UserRole"
 language sql
 security definer
 stable
