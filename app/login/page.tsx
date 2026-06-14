@@ -55,10 +55,19 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-discord-bg px-4">
-      <Card className="w-full max-w-sm border-discord-border bg-discord-card">
-        <CardHeader>
-          <CardTitle className="text-xl">Graphic Business CRM</CardTitle>
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-discord-bg px-4">
+      {/* ambient gradient glows */}
+      <div className="pointer-events-none absolute -top-24 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-blue-600/20 blur-3xl" />
+      <div className="pointer-events-none absolute bottom-0 right-0 h-80 w-80 rounded-full bg-indigo-600/10 blur-3xl" />
+
+      <Card className="surface-card w-full max-w-sm">
+        <CardHeader className="items-center text-center">
+          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-brand-gradient text-lg font-bold text-white shadow-lg shadow-blue-900/40">
+            GC
+          </div>
+          <CardTitle className="text-xl">
+            <span className="text-gradient-blue">Graphic Business CRM</span>
+          </CardTitle>
           <CardDescription>Sign in to your account</CardDescription>
         </CardHeader>
         <CardContent>
@@ -90,7 +99,11 @@ export default function LoginPage() {
               )}
             </div>
             {error && <p className="text-sm text-destructive">{error}</p>}
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
+            <Button
+              type="submit"
+              className="w-full bg-brand-gradient font-semibold shadow-lg shadow-blue-900/30 transition-opacity hover:opacity-90"
+              disabled={isSubmitting}
+            >
               {isSubmitting ? "Signing in..." : "Sign In"}
             </Button>
           </form>

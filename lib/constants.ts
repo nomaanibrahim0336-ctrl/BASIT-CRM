@@ -141,12 +141,12 @@ export const ROLE_NAV_ACCESS: Record<UserRole, string[]> = {
 };
 
 export const DEAL_STAGE_COLORS: Record<DealStage, string> = {
-  [DealStage.WON]: "#5865f2",
-  [DealStage.DESIGN_BRIEFED]: "#8b5cf6",
-  [DealStage.IN_PROGRESS]: "#f59e0b",
-  [DealStage.IN_REVISION]: "#fb923c",
-  [DealStage.DELIVERED]: "#22c55e",
-  [DealStage.COMPLETED]: "#10b981",
+  [DealStage.WON]: "#2563eb",
+  [DealStage.DESIGN_BRIEFED]: "#3b82f6",
+  [DealStage.IN_PROGRESS]: "#60a5fa",
+  [DealStage.IN_REVISION]: "#6366f1",
+  [DealStage.DELIVERED]: "#38bdf8",
+  [DealStage.COMPLETED]: "#22d3ee",
   [DealStage.CANCELLED]: "#ef4444",
 };
 

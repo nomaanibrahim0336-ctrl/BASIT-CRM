@@ -41,9 +41,15 @@ export function Sidebar({ role }: SidebarProps) {
   const items = NAV_ITEMS.filter((item) => accessibleKeys.includes(item.key));
 
   return (
-    <aside className="hidden w-60 flex-col border-r border-discord-border bg-discord-sidebar md:flex">
-      <div className="flex h-16 items-center border-b border-discord-border px-4">
-        <span className="text-lg font-semibold">Graphic CRM</span>
+    <aside className="hidden w-64 flex-col border-r border-white/5 bg-discord-sidebar/80 backdrop-blur-sm md:flex">
+      <div className="flex h-16 items-center gap-2.5 border-b border-white/5 px-5">
+        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-gradient text-sm font-bold text-white shadow-lg shadow-blue-900/40">
+          GC
+        </div>
+        <div className="leading-tight">
+          <span className="block text-sm font-semibold text-white">Graphic CRM</span>
+          <span className="block text-[11px] text-slate-400">Business Suite</span>
+        </div>
       </div>
       <nav className="flex-1 space-y-1 p-3">
         {items.map((item) => {
@@ -55,18 +61,29 @@ export function Sidebar({ role }: SidebarProps) {
               key={item.key}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                "group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
                 isActive
-                  ? "bg-discord-accent text-white"
-                  : "text-muted-foreground hover:bg-discord-card hover:text-foreground"
+                  ? "bg-brand-gradient text-white shadow-lg shadow-blue-900/30"
+                  : "text-slate-400 hover:bg-white/5 hover:text-white"
               )}
             >
-              <Icon className="h-4 w-4" />
+              {isActive && (
+                <span className="absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r-full bg-blue-300" />
+              )}
+              <Icon
+                className={cn(
+                  "h-4 w-4 transition-colors",
+                  isActive ? "text-white" : "text-slate-500 group-hover:text-blue-300"
+                )}
+              />
               {item.label}
             </Link>
           );
         })}
       </nav>
+      <div className="border-t border-white/5 p-4">
+        <p className="text-[11px] text-slate-500">© {new Date().getFullYear()} Graphic CRM</p>
+      </div>
     </aside>
   );
 }
