@@ -222,10 +222,10 @@ model SalarySplit {
   createdAt       DateTime   @default(now()) @map("created_at")
 
   teamMemberId    String     @map("team_member_id")
-  dealId          String     @map("deal_id")
+  dealId          String?    @map("deal_id")
 
   teamMember      Team       @relation(fields: [teamMemberId], references: [id])
-  deal            Deal       @relation(fields: [dealId], references: [id])
+  deal            Deal?      @relation(fields: [dealId], references: [id])
 
   @@index([teamMemberId])
   @@index([dealId])

@@ -23,7 +23,6 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useCreateSalarySplit, useUpdateSalarySplit } from "@/hooks/useFinances";
-import { useDeals } from "@/hooks/useDeals";
 import { useTeamMembers } from "@/hooks/useTeam";
 import { PAY_PERIOD_LABELS, PAID_STATUS_LABELS, SPLIT_TYPE_LABELS } from "@/lib/constants";
 import { formatPKR } from "@/lib/utils";
@@ -41,7 +40,6 @@ interface SalarySplitFormProps {
 
 export function SalarySplitForm({ open, onOpenChange, salarySplit }: SalarySplitFormProps) {
   const { toast } = useToast();
-  const { data: deals } = useDeals({ limit: "100" });
   const { data: teamMembers } = useTeamMembers();
   const createSplit = useCreateSalarySplit();
   const updateSplit = useUpdateSalarySplit(salarySplit?.id ?? "");
@@ -59,7 +57,7 @@ export function SalarySplitForm({ open, onOpenChange, salarySplit }: SalarySplit
     datePaid: salarySplit?.datePaid ?? null,
     notes: salarySplit?.notes ?? "",
     teamMemberId: salarySplit?.teamMemberId ?? "",
-    dealId: salarySplit?.dealId ?? "",
+    dealId: null,
   });
 
   const {
@@ -139,61 +137,36 @@ export function SalarySplitForm({ open, onOpenChange, salarySplit }: SalarySplit
           <DialogTitle>{salarySplit ? "Edit Salary Split" : "New Salary Split"}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Team Member</Label>
-              <Controller
-                control={control}
-                name="teamMemberId"
-                render={({ field }) => (
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select member" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {teamMembers?.data.map((member) => (
-                        <SelectItem key={member.id} value={member.id}>
-                          {member.fullName}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-              {errors.teamMemberId && (
-                <p className="text-sm text-destructive">{errors.teamMemberId.message}</p>
+          <div className="space-y-2">
+            <Label>Team Member</Label>
+            <Controller
+              control={control}
+              name="teamMemberId"
+              render={({ field }) => (
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select member" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {teamMembers?.data.map((member) => (
+                      <SelectItem key={member.id} value={member.id}>
+                        {member.fullName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               )}
-              {selectedMember && (
-                <p className="text-xs text-muted-foreground">
-                  {selectedMember.fixedSalary != null && `Fixed Salary: ${formatPKR(Number(selectedMember.fixedSalary))}`}
-                  {selectedMember.fixedSalary != null && selectedMember.commissionRate != null && " · "}
-                  {selectedMember.commissionRate != null && `Commission: ${selectedMember.commissionRate}%`}
-                </p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label>Deal</Label>
-              <Controller
-                control={control}
-                name="dealId"
-                render={({ field }) => (
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select deal" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {deals?.data.map((deal) => (
-                        <SelectItem key={deal.id} value={deal.id}>
-                          {deal.dealName}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-              {errors.dealId && <p className="text-sm text-destructive">{errors.dealId.message}</p>}
-            </div>
+            />
+            {errors.teamMemberId && (
+              <p className="text-sm text-destructive">{errors.teamMemberId.message}</p>
+            )}
+            {selectedMember && (
+              <p className="text-xs text-muted-foreground">
+                {selectedMember.fixedSalary != null && `Fixed Salary: ${formatPKR(Number(selectedMember.fixedSalary))}`}
+                {selectedMember.fixedSalary != null && selectedMember.commissionRate != null && " · "}
+                {selectedMember.commissionRate != null && `Commission: ${selectedMember.commissionRate}%`}
+              </p>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">

@@ -90,7 +90,7 @@ export interface SalarySplit {
   notes: string | null;
   createdAt: string;
   teamMemberId: string;
-  dealId: string;
+  dealId: string | null;
   teamMember?: Team;
   deal?: Deal;
 }

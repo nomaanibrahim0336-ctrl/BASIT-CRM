@@ -66,7 +66,7 @@ export const salarySplitCreateSchema = z.object({
   datePaid: z.string().datetime().optional().nullable(),
   notes: z.string().optional().nullable(),
   teamMemberId: z.string().uuid(),
-  dealId: z.string().uuid(),
+  dealId: z.string().uuid().optional().nullable(),
 });
 
 export const salarySplitUpdateSchema = salarySplitCreateSchema.partial();
