@@ -15,7 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useSalarySplits, useUpdateSalarySplit } from "@/hooks/useFinances";
 import { useAuth } from "@/hooks/useAuth";
 import { PAID_STATUS_LABELS, PAY_PERIOD_LABELS, SPLIT_TYPE_LABELS } from "@/lib/constants";
-import { formatCurrency } from "@/lib/utils";
+import { formatPKR } from "@/lib/utils";
 import { PaidStatus, UserRole } from "@/types/enums";
 
 export default function SalarySplitsPage() {
@@ -27,7 +27,7 @@ export default function SalarySplitsPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-semibold">Salary Splits</h1>
+      <h1 className="text-xl font-semibold">Salary Splits (PKR)</h1>
 
       {isLoading ? (
         <Skeleton className="h-64 w-full" />
@@ -38,7 +38,7 @@ export default function SalarySplitsPage() {
               <TableHead>Team Member</TableHead>
               <TableHead>Deal</TableHead>
               <TableHead>Type</TableHead>
-              <TableHead>Amount</TableHead>
+              <TableHead>Amount (PKR)</TableHead>
               <TableHead>Pay Period</TableHead>
               <TableHead>Status</TableHead>
               {isAdmin && <TableHead></TableHead>}
@@ -84,7 +84,7 @@ function SplitRow({ split, isAdmin }: { split: any; isAdmin: boolean }) {
       <TableCell className="font-medium">{split.teamMember?.fullName ?? "—"}</TableCell>
       <TableCell>{split.deal?.dealName ?? "—"}</TableCell>
       <TableCell>{SPLIT_TYPE_LABELS[split.splitType as keyof typeof SPLIT_TYPE_LABELS]}</TableCell>
-      <TableCell>{formatCurrency(split.splitAmount)}</TableCell>
+      <TableCell>{formatPKR(split.splitAmount)}</TableCell>
       <TableCell>{PAY_PERIOD_LABELS[split.payPeriod as keyof typeof PAY_PERIOD_LABELS]}</TableCell>
       <TableCell>
         <Badge variant={split.paidStatus === PaidStatus.PAID ? "default" : "secondary"}>

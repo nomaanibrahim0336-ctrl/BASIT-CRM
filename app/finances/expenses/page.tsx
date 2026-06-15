@@ -17,7 +17,7 @@ import { FinanceSummaryCards } from "@/components/finances/FinanceSummaryCards";
 import { ExpenseForm } from "@/components/finances/ExpenseForm";
 import { useExpenses } from "@/hooks/useFinances";
 import { EXPENSE_CATEGORY_LABELS, EXPENSE_TYPE_LABELS } from "@/lib/constants";
-import { formatCurrency } from "@/lib/utils";
+import { formatPKR } from "@/lib/utils";
 import { ExpenseType } from "@/types/enums";
 
 export default function ExpensesPage() {
@@ -35,7 +35,7 @@ export default function ExpensesPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">Expenses</h1>
+        <h1 className="text-xl font-semibold">Expenses (PKR)</h1>
         <Button onClick={() => setFormOpen(true)}>
           <Plus className="mr-2 h-4 w-4" />
           Log Expense
@@ -44,9 +44,9 @@ export default function ExpensesPage() {
 
       <FinanceSummaryCards
         items={[
-          { title: "Total Expenses", value: total, icon: Receipt },
-          { title: "Fixed", value: fixedTotal, icon: Receipt },
-          { title: "Variable", value: variableTotal, icon: Receipt },
+          { title: "Total Expenses", value: total, icon: Receipt, format: formatPKR },
+          { title: "Fixed", value: fixedTotal, icon: Receipt, format: formatPKR },
+          { title: "Variable", value: variableTotal, icon: Receipt, format: formatPKR },
         ]}
       />
 
@@ -59,7 +59,7 @@ export default function ExpensesPage() {
               <TableHead>Description</TableHead>
               <TableHead>Category</TableHead>
               <TableHead>Type</TableHead>
-              <TableHead>Amount</TableHead>
+              <TableHead>Amount (PKR)</TableHead>
               <TableHead>Date</TableHead>
               <TableHead>Paid By</TableHead>
             </TableRow>
@@ -72,7 +72,7 @@ export default function ExpensesPage() {
                 <TableCell>
                   <Badge variant="secondary">{EXPENSE_TYPE_LABELS[expense.expenseType]}</Badge>
                 </TableCell>
-                <TableCell>{formatCurrency(expense.amount)}</TableCell>
+                <TableCell>{formatPKR(expense.amount)}</TableCell>
                 <TableCell>{new Date(expense.dateIncurred).toLocaleDateString()}</TableCell>
                 <TableCell>{expense.paidBy?.fullName ?? "—"}</TableCell>
               </TableRow>

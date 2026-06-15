@@ -19,7 +19,7 @@ import { useTeamMembers } from "@/hooks/useTeam";
 import { useSyncSheets } from "@/hooks/useFinances";
 import { useToast } from "@/hooks/use-toast";
 import { MEMBER_STATUS_LABELS, ROLE_LABELS } from "@/lib/constants";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatPKR } from "@/lib/utils";
 import { MemberStatus } from "@/types/enums";
 
 export default function TeamPage() {
@@ -85,7 +85,7 @@ export default function TeamPage() {
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  {member.fixedSalary != null ? formatCurrency(member.fixedSalary) : "—"}
+                  {member.fixedSalary != null ? formatPKR(member.fixedSalary) : "—"}
                 </TableCell>
               </TableRow>
             ))}

@@ -18,7 +18,7 @@ import { RevenueForm } from "@/components/finances/RevenueForm";
 import { useRevenueLogs } from "@/hooks/useFinances";
 import { useAuth } from "@/hooks/useAuth";
 import { PAYMENT_METHOD_LABELS, PAYMENT_TYPE_LABELS } from "@/lib/constants";
-import { formatCurrency } from "@/lib/utils";
+import { formatUSD } from "@/lib/utils";
 import { DollarSign } from "lucide-react";
 import { UserRole } from "@/types/enums";
 
@@ -37,7 +37,7 @@ export default function RevenuePage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">Revenue</h1>
+        <h1 className="text-xl font-semibold">Revenue (USD)</h1>
         {canManage && (
           <Button onClick={() => setFormOpen(true)}>
             <Plus className="mr-2 h-4 w-4" />
@@ -60,7 +60,7 @@ export default function RevenuePage() {
           <TableHeader>
             <TableRow>
               <TableHead>Deal</TableHead>
-              <TableHead>Amount</TableHead>
+              <TableHead>Amount (USD)</TableHead>
               <TableHead>Type</TableHead>
               <TableHead>Method</TableHead>
               <TableHead>Date</TableHead>
@@ -72,7 +72,7 @@ export default function RevenuePage() {
             {(data?.data ?? []).map((log) => (
               <TableRow key={log.id}>
                 <TableCell className="font-medium">{log.deal?.dealName ?? "—"}</TableCell>
-                <TableCell>{formatCurrency(log.amountReceived)}</TableCell>
+                <TableCell>{formatUSD(log.amountReceived)}</TableCell>
                 <TableCell>{PAYMENT_TYPE_LABELS[log.paymentType]}</TableCell>
                 <TableCell>{PAYMENT_METHOD_LABELS[log.paymentMethod]}</TableCell>
                 <TableCell>{new Date(log.dateReceived).toLocaleDateString()}</TableCell>

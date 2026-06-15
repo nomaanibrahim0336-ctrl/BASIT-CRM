@@ -142,6 +142,7 @@ model Team {
   salarySplits     SalarySplit[]
   expenses         Expense[]
   revenueHandled   RevenueLog[]
+  exchangeRatesSet ExchangeRate[]
 
   @@map("teams")
 }
@@ -279,6 +280,8 @@ model MonthlyPnL {
   month                  String
   year                   Int
   totalRevenue           Decimal  @map("total_revenue") @db.Decimal(12, 2)
+  totalRevenueUsd        Decimal  @default(0) @map("total_revenue_usd") @db.Decimal(12, 2)
+  exchangeRate           Decimal  @default(0) @map("exchange_rate") @db.Decimal(10, 2)
   totalFixedExpenses     Decimal  @map("total_fixed_expenses") @db.Decimal(12, 2)
   totalVariableExpenses  Decimal  @map("total_variable_expenses") @db.Decimal(12, 2)
   totalSalaryPayouts     Decimal  @map("total_salary_payouts") @db.Decimal(12, 2)
@@ -291,3 +294,17 @@ model MonthlyPnL {
   @@index([year, month])
   @@map("monthly_pnl")
 }
+
+model ExchangeRate {
+  id            String   @id @default(uuid())
+  rate          Decimal  @db.Decimal(10, 2) @map("rate")
+  effectiveDate DateTime @default(now()) @map("effective_date")
+  setById       String?  @map("set_by_id")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  setBy         Team?    @relation(fields: [setById], references: [id])
+
+  @@index([effectiveDate])
+  @@map("exchange_rates")
+}
+

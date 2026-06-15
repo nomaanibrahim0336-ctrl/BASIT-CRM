@@ -12,7 +12,7 @@ import { useTeamMember, useDeleteTeamMember } from "@/hooks/useTeam";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { MEMBER_STATUS_LABELS, ROLE_LABELS, DEAL_STAGE_LABELS, LEAD_STATUS_LABELS } from "@/lib/constants";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatPKR } from "@/lib/utils";
 import { MemberStatus, UserRole } from "@/types/enums";
 
 export default function TeamMemberDetailPage() {
@@ -84,7 +84,7 @@ export default function TeamMemberDetailPage() {
           <Field label="Joined" value={new Date(member.joinedDate).toLocaleDateString()} />
           <Field
             label="Fixed Salary"
-            value={member.fixedSalary != null ? formatCurrency(member.fixedSalary) : "—"}
+            value={member.fixedSalary != null ? formatPKR(member.fixedSalary) : "—"}
           />
           <Field
             label="Commission Rate"

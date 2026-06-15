@@ -2,7 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api-client";
-import type { Expense, MonthlyPnL, RevenueLog, SalarySplit } from "@/types/database";
+import type { ExchangeRate, Expense, MonthlyPnL, RevenueLog, SalarySplit } from "@/types/database";
 import type { PaginatedResponse } from "@/types/api";
 
 // ─── REVENUE ────────────────────────────────────────────────────────────────
@@ -149,5 +149,27 @@ export function useRecalculatePnL() {
     mutationFn: () =>
       apiFetch<MonthlyPnL>("/api/finance/calculate-pnl", { method: "POST", body: JSON.stringify({}) }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["pnl"] }),
+  });
+}
+
+// ─── EXCHANGE RATE ──────────────────────────────────────────────────────────
+
+export function useExchangeRate() {
+  return useQuery({
+    queryKey: ["exchange-rate"],
+    queryFn: () => apiFetch<ExchangeRate | null>("/api/finance/exchange-rate"),
+  });
+}
+
+export function useSetExchangeRate() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: { rate: number; effectiveDate?: string }) =>
+      apiFetch<ExchangeRate>("/api/finance/exchange-rate", { method: "POST", body: JSON.stringify(data) }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["exchange-rate"] });
+      queryClient.invalidateQueries({ queryKey: ["pnl"] });
+    },
   });
 }

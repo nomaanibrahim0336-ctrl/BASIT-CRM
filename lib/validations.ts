@@ -97,6 +97,11 @@ export const revenueLogCreateSchema = z.object({
 
 export const revenueLogUpdateSchema = revenueLogCreateSchema.partial();
 
+export const exchangeRateCreateSchema = z.object({
+  rate: z.number().positive(),
+  effectiveDate: z.string().datetime().optional(),
+});
+
 export const teamCreateSchema = z.object({
   fullName: z.string().min(1),
   discordUsername: z.string().min(1),

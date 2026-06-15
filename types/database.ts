@@ -124,11 +124,21 @@ export interface RevenueLog {
   handledBy?: Team;
 }
 
+export interface ExchangeRate {
+  id: string;
+  rate: number;
+  effectiveDate: string;
+  setById: string | null;
+  createdAt: string;
+}
+
 export interface MonthlyPnL {
   id: string;
   month: string;
   year: number;
   totalRevenue: number;
+  totalRevenueUsd: number;
+  exchangeRate: number;
   totalFixedExpenses: number;
   totalVariableExpenses: number;
   totalSalaryPayouts: number;

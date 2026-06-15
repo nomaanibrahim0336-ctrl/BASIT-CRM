@@ -7,7 +7,7 @@ import { StatCard } from "@/components/dashboard/StatCard";
 import { DealsByStageChart } from "@/components/dashboard/DealsByStageChart";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LEAD_STATUS_LABELS, DEAL_STAGE_LABELS, ROLE_LABELS } from "@/lib/constants";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatPKR } from "@/lib/utils";
 import { UserRole } from "@/types/enums";
 
 export default function DashboardPage() {
@@ -122,7 +122,7 @@ export default function DashboardPage() {
           />
           <StatCard
             title="Expenses This Month"
-            value={formatCurrency(stats.expensesThisMonth)}
+            value={formatPKR(stats.expensesThisMonth)}
             icon={Receipt}
             accent="violet"
           />
