@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -26,6 +26,7 @@ import { useCreateSalarySplit, useUpdateSalarySplit } from "@/hooks/useFinances"
 import { useDeals } from "@/hooks/useDeals";
 import { useTeamMembers } from "@/hooks/useTeam";
 import { PAY_PERIOD_LABELS, PAID_STATUS_LABELS, SPLIT_TYPE_LABELS } from "@/lib/constants";
+import { formatPKR } from "@/lib/utils";
 import { PaidStatus, PayPeriod, SplitType } from "@/types/enums";
 import type { SalarySplit } from "@/types/database";
 import { salarySplitCreateSchema, salarySplitUpdateSchema } from "@/lib/validations";
@@ -44,6 +45,8 @@ export function SalarySplitForm({ open, onOpenChange, salarySplit }: SalarySplit
   const { data: teamMembers } = useTeamMembers();
   const createSplit = useCreateSalarySplit();
   const updateSplit = useUpdateSalarySplit(salarySplit?.id ?? "");
+  const [bonusEnabled, setBonusEnabled] = useState(false);
+  const [bonusAmount, setBonusAmount] = useState(0);
 
   const schema = salarySplit ? salarySplitUpdateSchema : salarySplitCreateSchema;
 
@@ -64,6 +67,8 @@ export function SalarySplitForm({ open, onOpenChange, salarySplit }: SalarySplit
     handleSubmit,
     control,
     reset,
+    watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<SalarySplitFormValues>({
     resolver: zodResolver(schema as any),
@@ -71,8 +76,27 @@ export function SalarySplitForm({ open, onOpenChange, salarySplit }: SalarySplit
   });
 
   useEffect(() => {
-    if (open) reset(defaultValues());
+    if (open) {
+      reset(defaultValues());
+      setBonusEnabled(false);
+      setBonusAmount(0);
+    }
   }, [open, salarySplit]);
+
+  const selectedTeamMemberId = watch("teamMemberId");
+  const selectedSplitType = watch("splitType");
+  const selectedMember = teamMembers?.data.find((m) => m.id === selectedTeamMemberId);
+
+  // Auto-fill amount/percentage from the team member's hire terms when not editing an existing split.
+  useEffect(() => {
+    if (salarySplit || !selectedMember) return;
+    if (selectedSplitType === SplitType.FIXED_SALARY && selectedMember.fixedSalary != null) {
+      setValue("splitAmount", Number(selectedMember.fixedSalary));
+    }
+    if (selectedSplitType === SplitType.COMMISSION && selectedMember.commissionRate != null) {
+      setValue("splitPercentage", Number(selectedMember.commissionRate));
+    }
+  }, [selectedMember, selectedSplitType, salarySplit, setValue]);
 
   async function onSubmit(values: SalarySplitFormValues) {
     try {
@@ -90,6 +114,16 @@ export function SalarySplitForm({ open, onOpenChange, salarySplit }: SalarySplit
         toast({ title: "Salary split updated" });
       } else {
         await createSplit.mutateAsync(payload);
+
+        if (bonusEnabled && bonusAmount > 0) {
+          await createSplit.mutateAsync({
+            ...payload,
+            splitType: SplitType.BONUS,
+            splitAmount: Number(bonusAmount),
+            splitPercentage: null,
+          });
+        }
+
         toast({ title: "Salary split created" });
       }
       onOpenChange(false);
@@ -128,6 +162,13 @@ export function SalarySplitForm({ open, onOpenChange, salarySplit }: SalarySplit
               />
               {errors.teamMemberId && (
                 <p className="text-sm text-destructive">{errors.teamMemberId.message}</p>
+              )}
+              {selectedMember && (
+                <p className="text-xs text-muted-foreground">
+                  {selectedMember.fixedSalary != null && `Fixed Salary: ${formatPKR(Number(selectedMember.fixedSalary))}`}
+                  {selectedMember.fixedSalary != null && selectedMember.commissionRate != null && " · "}
+                  {selectedMember.commissionRate != null && `Commission: ${selectedMember.commissionRate}%`}
+                </p>
               )}
             </div>
 
@@ -240,6 +281,36 @@ export function SalarySplitForm({ open, onOpenChange, salarySplit }: SalarySplit
               )}
             />
           </div>
+
+          {!salarySplit && (
+            <div className="space-y-2 rounded-lg border border-white/10 p-3">
+              <div className="flex items-center gap-2">
+                <input
+                  id="bonusEnabled"
+                  type="checkbox"
+                  className="h-4 w-4"
+                  checked={bonusEnabled}
+                  onChange={(e) => setBonusEnabled(e.target.checked)}
+                />
+                <Label htmlFor="bonusEnabled">Also add a bonus for this split</Label>
+              </div>
+              {bonusEnabled && (
+                <div className="space-y-2">
+                  <Label htmlFor="bonusAmount">Bonus Amount (PKR)</Label>
+                  <Input
+                    id="bonusAmount"
+                    type="number"
+                    step="0.01"
+                    value={bonusAmount}
+                    onChange={(e) => setBonusAmount(Number(e.target.value))}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Creates a separate "Bonus" split for the same team member and deal.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="space-y-2">
             <Label htmlFor="notes">Notes</Label>
