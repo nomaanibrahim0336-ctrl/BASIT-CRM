@@ -64,12 +64,22 @@ export const salarySplitCreateSchema = z.object({
   payPeriod: z.enum(enumValues(PayPeriod)),
   paidStatus: z.enum(enumValues(PaidStatus)).optional(),
   datePaid: z.string().datetime().optional().nullable(),
+  periodMonth: z.string().regex(/^\d{4}-\d{2}$/).optional().nullable(),
   notes: z.string().optional().nullable(),
   teamMemberId: z.string().uuid(),
   dealId: z.string().uuid().optional().nullable(),
 });
 
 export const salarySplitUpdateSchema = salarySplitCreateSchema.partial();
+
+export const payrollAdjustmentCreateSchema = z.object({
+  label: z.string().min(1),
+  amount: z.number(),
+});
+
+export const payrollInitializeSchema = z.object({
+  periodMonth: z.string().regex(/^\d{4}-\d{2}$/),
+});
 
 export const expenseCreateSchema = z.object({
   category: z.enum(enumValues(ExpenseCategory)),

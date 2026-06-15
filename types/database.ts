@@ -87,12 +87,22 @@ export interface SalarySplit {
   payPeriod: PayPeriod;
   paidStatus: PaidStatus;
   datePaid: string | null;
+  periodMonth: string | null;
   notes: string | null;
   createdAt: string;
   teamMemberId: string;
   dealId: string | null;
   teamMember?: Team;
   deal?: Deal;
+  adjustments?: PayrollAdjustment[];
+}
+
+export interface PayrollAdjustment {
+  id: string;
+  salarySplitId: string;
+  label: string;
+  amount: number;
+  createdAt: string;
 }
 
 export interface Expense {

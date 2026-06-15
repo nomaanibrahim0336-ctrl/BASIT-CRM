@@ -218,6 +218,7 @@ model SalarySplit {
   payPeriod       PayPeriod  @map("pay_period")
   paidStatus      PaidStatus @default(unpaid) @map("paid_status")
   datePaid        DateTime?  @map("date_paid")
+  periodMonth     String?    @map("period_month")
   notes           String?
   createdAt       DateTime   @default(now()) @map("created_at")
 
@@ -226,11 +227,26 @@ model SalarySplit {
 
   teamMember      Team       @relation(fields: [teamMemberId], references: [id])
   deal            Deal?      @relation(fields: [dealId], references: [id])
+  adjustments     PayrollAdjustment[]
 
   @@index([teamMemberId])
   @@index([dealId])
   @@index([paidStatus])
+  @@index([periodMonth])
   @@map("salary_splits")
+}
+
+model PayrollAdjustment {
+  id            String      @id @default(uuid())
+  salarySplitId String      @map("salary_split_id")
+  label         String
+  amount        Decimal     @db.Decimal(10, 2)
+  createdAt     DateTime    @default(now()) @map("created_at")
+
+  salarySplit   SalarySplit @relation(fields: [salarySplitId], references: [id], onDelete: Cascade)
+
+  @@index([salarySplitId])
+  @@map("payroll_adjustments")
 }
 
 model Expense {

@@ -29,13 +29,16 @@ export async function GET(request: NextRequest) {
     const paidStatus = searchParams.get("paidStatus");
     if (paidStatus) where.paidStatus = paidStatus as Prisma.EnumPaidStatusFilter["equals"];
 
+    const periodMonth = searchParams.get("periodMonth");
+    if (periodMonth) where.periodMonth = periodMonth;
+
     const [data, totalCount] = await Promise.all([
       prisma.salarySplit.findMany({
         where,
         skip,
         take: limit,
         orderBy: { createdAt: "desc" },
-        include: { teamMember: true, deal: true },
+        include: { teamMember: true, deal: true, adjustments: true },
       }),
       prisma.salarySplit.count({ where }),
     ]);
@@ -62,11 +65,12 @@ export async function POST(request: NextRequest) {
         payPeriod: parsed.payPeriod as any,
         paidStatus: parsed.paidStatus as any,
         datePaid: parsed.datePaid,
+        periodMonth: parsed.periodMonth,
         notes: parsed.notes,
         teamMemberId: parsed.teamMemberId,
         dealId: parsed.dealId,
       },
-      include: { teamMember: true, deal: true },
+      include: { teamMember: true, deal: true, adjustments: true },
     });
 
     return NextResponse.json(serialize(salarySplit), { status: 201 });

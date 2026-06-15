@@ -23,7 +23,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
         payPeriod: parsed.payPeriod as any,
         paidStatus: parsed.paidStatus as any,
       },
-      include: { teamMember: true, deal: true },
+      include: { teamMember: true, deal: true, adjustments: true },
     });
 
     return NextResponse.json(serialize(salarySplit));

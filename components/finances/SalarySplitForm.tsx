@@ -36,9 +36,10 @@ interface SalarySplitFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   salarySplit?: SalarySplit;
+  periodMonth?: string;
 }
 
-export function SalarySplitForm({ open, onOpenChange, salarySplit }: SalarySplitFormProps) {
+export function SalarySplitForm({ open, onOpenChange, salarySplit, periodMonth }: SalarySplitFormProps) {
   const { toast } = useToast();
   const { data: teamMembers } = useTeamMembers();
   const createSplit = useCreateSalarySplit();
@@ -58,6 +59,7 @@ export function SalarySplitForm({ open, onOpenChange, salarySplit }: SalarySplit
     notes: salarySplit?.notes ?? "",
     teamMemberId: salarySplit?.teamMemberId ?? "",
     dealId: null,
+    periodMonth: salarySplit?.periodMonth ?? periodMonth ?? null,
   });
 
   const {

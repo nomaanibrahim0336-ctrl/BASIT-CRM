@@ -125,6 +125,42 @@ export function useDeleteSalarySplit() {
   });
 }
 
+export function useInitializePayrollMonth() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (periodMonth: string) =>
+      apiFetch<{ created: number }>("/api/finance/salary-splits/initialize-month", {
+        method: "POST",
+        body: JSON.stringify({ periodMonth }),
+      }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["salary-splits"] }),
+  });
+}
+
+export function useCreatePayrollAdjustment(splitId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: { label: string; amount: number }) =>
+      apiFetch(`/api/finance/salary-splits/${splitId}/adjustments`, {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["salary-splits"] }),
+  });
+}
+
+export function useDeletePayrollAdjustment(splitId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (adjustmentId: string) =>
+      apiFetch(`/api/finance/salary-splits/${splitId}/adjustments/${adjustmentId}`, { method: "DELETE" }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["salary-splits"] }),
+  });
+}
+
 // ─── P&L ────────────────────────────────────────────────────────────────────
 
 export function useMonthlyPnL(filters: Record<string, string> = {}) {
