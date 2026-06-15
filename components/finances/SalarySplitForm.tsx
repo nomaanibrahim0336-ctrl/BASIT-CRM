@@ -301,8 +301,8 @@ export function SalarySplitForm({ open, onOpenChange, salarySplit }: SalarySplit
                     id="bonusAmount"
                     type="number"
                     step="0.01"
-                    value={bonusAmount}
-                    onChange={(e) => setBonusAmount(Number(e.target.value))}
+                    value={bonusAmount === 0 ? "" : bonusAmount}
+                    onChange={(e) => setBonusAmount(e.target.value === "" ? 0 : Number(e.target.value))}
                   />
                   <p className="text-xs text-muted-foreground">
                     Creates a separate "Bonus" split for the same team member and deal.
