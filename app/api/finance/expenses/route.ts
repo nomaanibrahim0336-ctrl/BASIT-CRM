@@ -28,6 +28,14 @@ export async function GET(request: NextRequest) {
     const expenseType = searchParams.get("expenseType");
     if (expenseType) where.expenseType = expenseType as Prisma.EnumExpenseTypeFilter["equals"];
 
+    const dateFrom = searchParams.get("dateFrom");
+    const dateTo = searchParams.get("dateTo");
+    if (dateFrom || dateTo) {
+      where.dateIncurred = {};
+      if (dateFrom) where.dateIncurred.gte = new Date(dateFrom);
+      if (dateTo) where.dateIncurred.lt = new Date(dateTo);
+    }
+
     const [data, totalCount] = await Promise.all([
       prisma.expense.findMany({
         where,
