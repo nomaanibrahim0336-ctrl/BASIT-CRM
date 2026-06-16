@@ -47,7 +47,8 @@ function currentPeriodMonth() {
 
 function netAmount(split: SalarySplit) {
   const adjustments = split.adjustments ?? [];
-  return split.splitAmount + adjustments.reduce((sum, a) => sum + a.amount, 0);
+  const base = Number(split.splitAmount) || 0;
+  return base + adjustments.reduce((sum, a) => sum + (Number(a.amount) || 0), 0);
 }
 
 export default function SalarySplitsPage() {

@@ -30,8 +30,9 @@ export function AdjustmentsDialog({ open, onOpenChange, split }: AdjustmentsDial
   const deleteAdjustment = useDeletePayrollAdjustment(split.id);
 
   const adjustments = split.adjustments ?? [];
-  const adjustmentsTotal = adjustments.reduce((sum, a) => sum + a.amount, 0);
-  const netTotal = split.splitAmount + adjustmentsTotal;
+  const baseAmount = Number(split.splitAmount) || 0;
+  const adjustmentsTotal = adjustments.reduce((sum, a) => sum + (Number(a.amount) || 0), 0);
+  const netTotal = baseAmount + adjustmentsTotal;
 
   async function handleAdd() {
     if (!label.trim() || amount === "" || Number(amount) === 0) return;
@@ -62,7 +63,7 @@ export function AdjustmentsDialog({ open, onOpenChange, split }: AdjustmentsDial
         <div className="space-y-4">
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">Base Amount</span>
-            <span className="font-medium">{formatPKR(split.splitAmount)}</span>
+            <span className="font-medium">{formatPKR(baseAmount)}</span>
           </div>
 
           {adjustments.length > 0 && (

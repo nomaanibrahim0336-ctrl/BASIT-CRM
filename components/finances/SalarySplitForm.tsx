@@ -52,8 +52,9 @@ export function SalarySplitForm({ open, onOpenChange, salarySplit, periodMonth }
 
   const defaultValues = (): SalarySplitFormValues => ({
     splitType: salarySplit?.splitType ?? SplitType.COMMISSION,
-    splitAmount: salarySplit?.splitAmount ?? 0,
-    splitPercentage: salarySplit?.splitPercentage ?? null,
+    splitAmount: salarySplit ? Number(salarySplit.splitAmount) || 0 : 0,
+    splitPercentage:
+      salarySplit?.splitPercentage != null ? Number(salarySplit.splitPercentage) : null,
     payPeriod: salarySplit?.payPeriod ?? PayPeriod.MONTHLY,
     paidStatus: salarySplit?.paidStatus ?? PaidStatus.UNPAID,
     datePaid: salarySplit?.datePaid ?? null,

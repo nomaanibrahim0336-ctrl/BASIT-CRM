@@ -85,14 +85,39 @@ export function buildPaginatedResponse<T>(
   };
 }
 
-// Recursively converts Prisma Decimal fields to plain numbers so the JSON
-// response matches the camelCase `number` types in types/database.ts.
+// Recursively converts Prisma Decimal fields to plain numbers (and Dates to
+// ISO strings) so the JSON response matches the camelCase `number`/`string`
+// types in types/database.ts.
+//
+// NOTE: We must walk the structure manually rather than rely on a
+// JSON.stringify replacer — Prisma's Decimal defines toJSON(), which the
+// engine calls BEFORE the replacer, turning the value into a string. That
+// would leave numeric fields as strings on the client and break arithmetic
+// (e.g. "10000" + 0 === "100000").
+function deepConvert(value: any): any {
+  if (value === null || value === undefined) return value;
+
+  if (typeof value === "object") {
+    // Prisma Decimal (decimal.js) instances expose toNumber() + toFixed().
+    if (typeof value.toNumber === "function" && typeof value.toFixed === "function") {
+      return value.toNumber();
+    }
+    if (value instanceof Date) {
+      return value.toISOString();
+    }
+    if (Array.isArray(value)) {
+      return value.map(deepConvert);
+    }
+    const out: Record<string, any> = {};
+    for (const key of Object.keys(value)) {
+      out[key] = deepConvert(value[key]);
+    }
+    return out;
+  }
+
+  return value;
+}
+
 export function serialize<T>(data: T): T {
-  return JSON.parse(
-    JSON.stringify(data, (_key, value) =>
-      value && typeof value === "object" && typeof value.toNumber === "function"
-        ? value.toNumber()
-        : value
-    )
-  );
+  return deepConvert(data) as T;
 }
