@@ -74,6 +74,7 @@ export const SPLIT_TYPE_LABELS: Record<SplitType, string> = {
   [SplitType.FIXED_SALARY]: "Fixed Salary",
   [SplitType.COMMISSION]: "Commission",
   [SplitType.BONUS]: "Bonus",
+  [SplitType.HYBRID]: "Hybrid",
 };
 
 export const PAY_PERIOD_LABELS: Record<PayPeriod, string> = {

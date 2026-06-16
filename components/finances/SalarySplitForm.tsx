@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -46,6 +46,7 @@ export function SalarySplitForm({ open, onOpenChange, salarySplit, periodMonth }
   const updateSplit = useUpdateSalarySplit(salarySplit?.id ?? "");
   const [bonusEnabled, setBonusEnabled] = useState(false);
   const [bonusAmount, setBonusAmount] = useState(0);
+  const autoFillKey = useRef<string | null>(null);
 
   const schema = salarySplit ? salarySplitUpdateSchema : salarySplitCreateSchema;
 
@@ -80,6 +81,7 @@ export function SalarySplitForm({ open, onOpenChange, salarySplit, periodMonth }
       reset(defaultValues());
       setBonusEnabled(false);
       setBonusAmount(0);
+      autoFillKey.current = null;
     }
   }, [open, salarySplit]);
 
@@ -88,13 +90,21 @@ export function SalarySplitForm({ open, onOpenChange, salarySplit, periodMonth }
   const selectedMember = teamMembers?.data.find((m) => m.id === selectedTeamMemberId);
 
   // Auto-fill amount/percentage from the team member's hire terms when not editing an existing split.
+  // Keyed so a background refetch of team members doesn't clobber values the user has already typed.
   useEffect(() => {
     if (salarySplit || !selectedMember) return;
+    const key = `${selectedMember.id}:${selectedSplitType}`;
+    if (autoFillKey.current === key) return;
+    autoFillKey.current = key;
     if (selectedSplitType === SplitType.FIXED_SALARY && selectedMember.fixedSalary != null) {
       setValue("splitAmount", Number(selectedMember.fixedSalary));
     }
     if (selectedSplitType === SplitType.COMMISSION && selectedMember.commissionRate != null) {
       setValue("splitPercentage", Number(selectedMember.commissionRate));
+    }
+    if (selectedSplitType === SplitType.HYBRID) {
+      if (selectedMember.fixedSalary != null) setValue("splitAmount", Number(selectedMember.fixedSalary));
+      if (selectedMember.commissionRate != null) setValue("splitPercentage", Number(selectedMember.commissionRate));
     }
   }, [selectedMember, selectedSplitType, salarySplit, setValue]);
 

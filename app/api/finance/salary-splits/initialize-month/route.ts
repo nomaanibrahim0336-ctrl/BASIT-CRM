@@ -19,14 +19,21 @@ export async function POST(request: NextRequest) {
     const created = [];
 
     for (const member of members) {
-      if (member.fixedSalary == null && member.commissionRate == null) continue;
+      const hasFixed = member.fixedSalary != null;
+      const hasCommission = member.commissionRate != null;
+      if (!hasFixed && !hasCommission) continue;
 
       const existing = await prisma.salarySplit.findFirst({
         where: { teamMemberId: member.id, periodMonth },
       });
       if (existing) continue;
 
-      const splitType = member.fixedSalary != null ? SplitType.FIXED_SALARY : SplitType.COMMISSION;
+      const isHybrid = hasFixed && hasCommission;
+      const splitType = isHybrid
+        ? SplitType.HYBRID
+        : hasFixed
+        ? SplitType.FIXED_SALARY
+        : SplitType.COMMISSION;
 
       const split = await prisma.salarySplit.create({
         data: {

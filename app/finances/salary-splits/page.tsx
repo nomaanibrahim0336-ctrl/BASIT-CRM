@@ -62,7 +62,7 @@ export default function SalarySplitsPage() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [formOpen, setFormOpen] = useState(false);
   const [editingSplit, setEditingSplit] = useState<SalarySplit | undefined>(undefined);
-  const [adjustmentsSplit, setAdjustmentsSplit] = useState<SalarySplit | undefined>(undefined);
+  const [adjustmentsSplitId, setAdjustmentsSplitId] = useState<string | undefined>(undefined);
 
   const isAdmin = teamMember?.role === UserRole.ADMIN;
 
@@ -79,10 +79,26 @@ export default function SalarySplitsPage() {
     return rows;
   }, [data, memberFilter]);
 
+  // Always pull the live split from the query cache so the AdjustmentsDialog
+  // reflects additions/deletions without needing to close and reopen.
+  const adjustmentsSplit = adjustmentsSplitId
+    ? (splits.find((s) => s.id === adjustmentsSplitId) ?? data?.data?.find((s) => s.id === adjustmentsSplitId))
+    : undefined;
+
   const activeStaffCount = (teamMembers?.data ?? []).filter((m) => m.status === MemberStatus.ACTIVE).length;
   const totalPayroll = splits.reduce((sum, s) => sum + netAmount(s), 0);
   const totalPaid = splits.filter((s) => s.paidStatus === PaidStatus.PAID).reduce((sum, s) => sum + netAmount(s), 0);
   const totalUnpaid = splits.filter((s) => s.paidStatus === PaidStatus.UNPAID).reduce((sum, s) => sum + netAmount(s), 0);
+
+  function changeMemberFilter(v: string) {
+    setMemberFilter(v);
+    setSelected(new Set());
+  }
+
+  function changeStatusFilter(v: string) {
+    setStatusFilter(v);
+    setSelected(new Set());
+  }
 
   function toggleSelect(id: string) {
     setSelected((prev) => {
@@ -131,7 +147,10 @@ export default function SalarySplitsPage() {
   async function handleInitializeMonth() {
     try {
       const result = await initializeMonth.mutateAsync(periodMonth);
-      toast({ title: `Initialized payroll for ${periodMonth}`, description: `${result.created} entries created` });
+      const desc = result.created === 0
+        ? "All eligible staff already have entries for this month."
+        : `${result.created} entr${result.created === 1 ? "y" : "ies"} created.`;
+      toast({ title: `Payroll initialized — ${periodMonth}`, description: desc });
     } catch (error: any) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     }
@@ -182,7 +201,7 @@ export default function SalarySplitsPage() {
       />
 
       <div className="flex flex-wrap gap-2">
-        <Select value={memberFilter} onValueChange={setMemberFilter}>
+        <Select value={memberFilter} onValueChange={changeMemberFilter}>
           <SelectTrigger className="w-[200px]">
             <SelectValue placeholder="Team Member" />
           </SelectTrigger>
@@ -196,7 +215,7 @@ export default function SalarySplitsPage() {
           </SelectContent>
         </Select>
 
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
+        <Select value={statusFilter} onValueChange={changeStatusFilter}>
           <SelectTrigger className="w-[160px]">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
@@ -239,7 +258,6 @@ export default function SalarySplitsPage() {
                 </TableHead>
               )}
               <TableHead>Team Member</TableHead>
-              <TableHead>Deal</TableHead>
               <TableHead>Type</TableHead>
               <TableHead>Amount (PKR)</TableHead>
               <TableHead>Pay Period</TableHead>
@@ -257,12 +275,12 @@ export default function SalarySplitsPage() {
                 onToggleSelect={() => toggleSelect(split.id)}
                 onEdit={() => openEdit(split)}
                 onDelete={() => handleDelete(split)}
-                onAdjust={() => setAdjustmentsSplit(split)}
+                onAdjust={() => setAdjustmentsSplitId(split.id)}
               />
             ))}
             {splits.length === 0 && (
               <TableRow>
-                <TableCell colSpan={isAdmin ? 8 : 6} className="text-center text-muted-foreground py-6">
+                <TableCell colSpan={isAdmin ? 7 : 5} className="text-center text-muted-foreground py-6">
                   No salary splits found for {periodMonth}.
                 </TableCell>
               </TableRow>
@@ -275,7 +293,7 @@ export default function SalarySplitsPage() {
       {adjustmentsSplit && (
         <AdjustmentsDialog
           open={!!adjustmentsSplit}
-          onOpenChange={(open) => !open && setAdjustmentsSplit(undefined)}
+          onOpenChange={(open) => !open && setAdjustmentsSplitId(undefined)}
           split={adjustmentsSplit}
         />
       )}
@@ -325,7 +343,6 @@ function SplitRow({
         </TableCell>
       )}
       <TableCell className="font-medium">{split.teamMember?.fullName ?? "—"}</TableCell>
-      <TableCell>{split.deal?.dealName ?? "—"}</TableCell>
       <TableCell>{SPLIT_TYPE_LABELS[split.splitType as keyof typeof SPLIT_TYPE_LABELS]}</TableCell>
       <TableCell>
         <div className="flex items-center gap-1.5">

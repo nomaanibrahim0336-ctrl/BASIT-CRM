@@ -63,12 +63,15 @@ export async function calculateMonthlyPnL(year: number, monthIndex: number) {
       },
       _sum: { amount: true },
     }),
-    prisma.salarySplit.aggregate({
+    prisma.salarySplit.findMany({
       where: {
-        datePaid: { gte: monthStart, lt: monthEnd },
         paidStatus: PaidStatus.PAID,
+        OR: [
+          { periodMonth: `${year}-${String(monthIndex + 1).padStart(2, "0")}` },
+          { periodMonth: null, datePaid: { gte: monthStart, lt: monthEnd } },
+        ],
       },
-      _sum: { splitAmount: true },
+      include: { adjustments: true },
     }),
     getExchangeRate(monthEnd),
   ]);
@@ -79,7 +82,11 @@ export async function calculateMonthlyPnL(year: number, monthIndex: number) {
   const totalRevenue = totalRevenueUsd * exchangeRate;
   const totalFixedExpenses = fixedExpenseAgg._sum.amount?.toNumber() ?? 0;
   const totalVariableExpenses = variableExpenseAgg._sum.amount?.toNumber() ?? 0;
-  const totalSalaryPayouts = salaryAgg._sum.splitAmount?.toNumber() ?? 0;
+  const totalSalaryPayouts = salaryAgg.reduce((sum, split) => {
+    const base = split.splitAmount.toNumber();
+    const adjustmentsTotal = split.adjustments.reduce((s, a) => s + a.amount.toNumber(), 0);
+    return sum + base + adjustmentsTotal;
+  }, 0);
 
   const totalExpenses = totalFixedExpenses + totalVariableExpenses + totalSalaryPayouts;
   const netProfit = totalRevenue - totalExpenses;

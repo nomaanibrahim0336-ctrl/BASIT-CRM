@@ -88,7 +88,7 @@ export function useDeleteExpense() {
 // ─── SALARY SPLITS ──────────────────────────────────────────────────────────
 
 export function useSalarySplits(filters: Record<string, string> = {}) {
-  const params = new URLSearchParams({ limit: "50", ...filters });
+  const params = new URLSearchParams({ limit: "500", ...filters });
 
   return useQuery({
     queryKey: ["salary-splits", filters],

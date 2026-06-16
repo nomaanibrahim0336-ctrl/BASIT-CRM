@@ -61,6 +61,7 @@ export enum SplitType {
   FIXED_SALARY = "fixed_salary",
   COMMISSION = "commission",
   BONUS = "bonus",
+  HYBRID = "hybrid",
 }
 
 export enum PayPeriod {
