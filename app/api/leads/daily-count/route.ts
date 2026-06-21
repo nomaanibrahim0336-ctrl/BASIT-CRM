@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const teamMember = await validateAuth();
-    validateRole(teamMember, [UserRole.ADMIN, UserRole.LEAD_GENERATOR]);
+    validateRole(teamMember, [UserRole.ADMIN, UserRole.LEAD_GENERATOR, UserRole.SALES_CLOSER]);
 
     const body = await request.json();
     const parsed = dailyLeadCountCreateSchema.parse(body);
@@ -77,7 +77,9 @@ export async function POST(request: NextRequest) {
     const teamMemberId =
       teamMember.role === UserRole.LEAD_GENERATOR
         ? teamMember.id
-        : parsed.teamMemberId ?? teamMember.id;
+        : parsed.teamMemberId;
+
+    if (!teamMemberId) throw new ApiError("teamMemberId is required", 400);
 
     const entry = await prisma.dailyLeadCount.upsert({
       where: { teamMemberId_logDate: { teamMemberId, logDate: new Date(parsed.logDate) } },

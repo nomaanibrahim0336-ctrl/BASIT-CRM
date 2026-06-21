@@ -12,7 +12,11 @@ export async function PATCH(
     const teamMember = await validateAuth();
     const existing = await prisma.dailyLeadCount.findUnique({ where: { id: params.id } });
     if (!existing) throw new ApiError("Not found", 404);
-    if (teamMember.role !== UserRole.ADMIN && existing.teamMemberId !== teamMember.id) {
+    if (
+      teamMember.role !== UserRole.ADMIN &&
+      teamMember.role !== UserRole.SALES_CLOSER &&
+      existing.teamMemberId !== teamMember.id
+    ) {
       throw new ApiError("Forbidden", 403);
     }
 
