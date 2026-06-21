@@ -35,6 +35,17 @@ export const leadCreateSchema = z.object({
 
 export const leadUpdateSchema = leadCreateSchema.partial();
 
+export const dailyLeadCountCreateSchema = z.object({
+  logDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  count: z.number().int().nonnegative(),
+  notes: z.string().optional().nullable(),
+  teamMemberId: z.string().uuid().optional(),
+});
+
+export const dailyLeadCountUpdateSchema = dailyLeadCountCreateSchema.partial().omit({
+  teamMemberId: true,
+});
+
 export const dealCreateSchema = z.object({
   dealName: z.string().min(1),
   discordChannel: z.string().optional().nullable(),

@@ -2,7 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api-client";
-import type { Lead } from "@/types/database";
+import type { DailyLeadCount, Lead } from "@/types/database";
 import type { PaginatedResponse } from "@/types/api";
 
 export function useLeads(filters: Record<string, string> = {}) {
@@ -50,5 +50,39 @@ export function useDeleteLead() {
   return useMutation({
     mutationFn: (id: string) => apiFetch(`/api/leads/${id}`, { method: "DELETE" }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["leads"] }),
+  });
+}
+
+// ─── DAILY LEAD COUNTS ──────────────────────────────────────────────────────
+
+export function useDailyLeadCounts(filters: Record<string, string> = {}) {
+  const params = new URLSearchParams({ limit: "100", ...filters });
+
+  return useQuery({
+    queryKey: ["daily-lead-counts", filters],
+    queryFn: () =>
+      apiFetch<PaginatedResponse<DailyLeadCount>>(`/api/leads/daily-count?${params.toString()}`),
+  });
+}
+
+export function useLogDailyLeadCount() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: { logDate: string; count: number; notes?: string | null; teamMemberId?: string }) =>
+      apiFetch<DailyLeadCount>("/api/leads/daily-count", {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["daily-lead-counts"] }),
+  });
+}
+
+export function useDeleteDailyLeadCount() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => apiFetch(`/api/leads/daily-count/${id}`, { method: "DELETE" }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["daily-lead-counts"] }),
   });
 }

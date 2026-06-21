@@ -144,6 +144,7 @@ model Team {
   expenses         Expense[]
   revenueHandled   RevenueLog[]
   exchangeRatesSet ExchangeRate[]
+  dailyLeadCounts  DailyLeadCount[]
 
   @@map("teams")
 }
@@ -172,6 +173,23 @@ model Lead {
   @@index([generatedById])
   @@index([leadStatus])
   @@map("leads")
+}
+
+model DailyLeadCount {
+  id            String   @id @default(uuid())
+  logDate       DateTime @map("log_date") @db.Date
+  count         Int
+  notes         String?
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  teamMemberId  String   @map("team_member_id")
+  teamMember    Team     @relation(fields: [teamMemberId], references: [id])
+
+  @@unique([teamMemberId, logDate])
+  @@index([teamMemberId])
+  @@index([logDate])
+  @@map("daily_lead_counts")
 }
 
 model Deal {

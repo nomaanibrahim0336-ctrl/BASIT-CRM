@@ -51,6 +51,17 @@ export interface Lead {
   deals?: Deal[];
 }
 
+export interface DailyLeadCount {
+  id: string;
+  logDate: string;
+  count: number;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+  teamMemberId: string;
+  teamMember?: Team;
+}
+
 export interface Deal {
   id: string;
   dealName: string;
