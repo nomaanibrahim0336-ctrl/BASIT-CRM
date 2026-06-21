@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { ListChecks, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LeadFilters, type LeadFiltersValue } from "@/components/leads/LeadFilters";
 import { LeadsTable } from "@/components/leads/LeadsTable";
 import { LeadForm } from "@/components/leads/LeadForm";
-import { DailyLeadCountForm } from "@/components/leads/DailyLeadCountForm";
+import { DailyLeadCountWidget } from "@/components/leads/DailyLeadCountForm";
 import { DailyLeadCountTable } from "@/components/leads/DailyLeadCountTable";
 import { useLeads, useDailyLeadCounts } from "@/hooks/useLeads";
 import { useAuth } from "@/hooks/useAuth";
@@ -17,7 +17,6 @@ export default function LeadsPage() {
   const { teamMember } = useAuth();
   const [filters, setFilters] = useState<LeadFiltersValue>({ search: "", status: "", source: "" });
   const [formOpen, setFormOpen] = useState(false);
-  const [countFormOpen, setCountFormOpen] = useState(false);
 
   const queryFilters: Record<string, string> = { limit: "50" };
   if (filters.search) queryFilters.search = filters.search;
@@ -25,32 +24,28 @@ export default function LeadsPage() {
   if (filters.source) queryFilters.source = filters.source;
 
   const { data, isLoading } = useLeads(queryFilters);
-  const { data: countsData, isLoading: countsLoading } = useDailyLeadCounts();
 
-  const canCreate =
-    teamMember?.role === UserRole.ADMIN || teamMember?.role === UserRole.LEAD_GENERATOR;
   const isAdmin = teamMember?.role === UserRole.ADMIN;
   const isLeadGenerator = teamMember?.role === UserRole.LEAD_GENERATOR;
+  const isCloser = teamMember?.role === UserRole.SALES_CLOSER;
+  const canCreate = isAdmin || isLeadGenerator;
+  const canSeeCounts = isAdmin || isLeadGenerator || isCloser;
+
+  const { data: countsData, isLoading: countsLoading } = useDailyLeadCounts();
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold">Leads</h1>
-        <div className="flex items-center gap-2">
-          {(isLeadGenerator || isAdmin) && (
-            <Button variant="outline" onClick={() => setCountFormOpen(true)}>
-              <ListChecks className="mr-2 h-4 w-4" />
-              Log Daily Leads
-            </Button>
-          )}
-          {canCreate && (
-            <Button onClick={() => setFormOpen(true)}>
-              <Plus className="mr-2 h-4 w-4" />
-              New Lead
-            </Button>
-          )}
-        </div>
+        {canCreate && (
+          <Button onClick={() => setFormOpen(true)}>
+            <Plus className="mr-2 h-4 w-4" />
+            New Lead
+          </Button>
+        )}
       </div>
+
+      {isLeadGenerator && <DailyLeadCountWidget />}
 
       <LeadFilters value={filters} onChange={setFilters} />
 
@@ -64,7 +59,7 @@ export default function LeadsPage() {
         <LeadsTable leads={data?.data ?? []} />
       )}
 
-      {(isLeadGenerator || isAdmin) && (
+      {canSeeCounts && (
         <div className="space-y-2">
           <h2 className="text-lg font-semibold">Daily Lead Counts</h2>
           {countsLoading ? (
@@ -72,7 +67,7 @@ export default function LeadsPage() {
           ) : (
             <DailyLeadCountTable
               entries={countsData?.data ?? []}
-              showTeamMember={isAdmin}
+              showTeamMember={isAdmin || isCloser}
               canDelete={isAdmin}
             />
           )}
@@ -80,7 +75,6 @@ export default function LeadsPage() {
       )}
 
       <LeadForm open={formOpen} onOpenChange={setFormOpen} />
-      <DailyLeadCountForm open={countFormOpen} onOpenChange={setCountFormOpen} />
     </div>
   );
 }

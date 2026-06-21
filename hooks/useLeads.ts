@@ -61,7 +61,22 @@ export function useDailyLeadCounts(filters: Record<string, string> = {}) {
   return useQuery({
     queryKey: ["daily-lead-counts", filters],
     queryFn: () =>
-      apiFetch<PaginatedResponse<DailyLeadCount>>(`/api/leads/daily-count?${params.toString()}`),
+      apiFetch<PaginatedResponse<DailyLeadCount> & { totalLeads: number }>(
+        `/api/leads/daily-count?${params.toString()}`
+      ),
+  });
+}
+
+export function useIncrementDailyLeadCount() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (delta: number) =>
+      apiFetch<DailyLeadCount>("/api/leads/daily-count/increment", {
+        method: "POST",
+        body: JSON.stringify({ delta }),
+      }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["daily-lead-counts"] }),
   });
 }
 

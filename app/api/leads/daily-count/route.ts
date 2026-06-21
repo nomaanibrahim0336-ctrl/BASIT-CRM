@@ -23,12 +23,17 @@ export async function GET(request: NextRequest) {
 
     if (teamMember.role === UserRole.LEAD_GENERATOR) {
       where.teamMemberId = teamMember.id;
-    } else if (teamMember.role !== UserRole.ADMIN) {
+    } else if (
+      teamMember.role !== UserRole.ADMIN &&
+      teamMember.role !== UserRole.SALES_CLOSER
+    ) {
       throw new ApiError("Forbidden", 403);
     }
 
     const teamMemberId = searchParams.get("teamMemberId");
-    if (teamMemberId && teamMember.role === UserRole.ADMIN) where.teamMemberId = teamMemberId;
+    if (teamMemberId && teamMember.role !== UserRole.LEAD_GENERATOR) {
+      where.teamMemberId = teamMemberId;
+    }
 
     const dateFrom = searchParams.get("dateFrom");
     const dateTo = searchParams.get("dateTo");
@@ -38,7 +43,7 @@ export async function GET(request: NextRequest) {
       if (dateTo) where.logDate.lt = new Date(dateTo);
     }
 
-    const [data, totalCount] = await Promise.all([
+    const [data, totalCount, sumResult] = await Promise.all([
       prisma.dailyLeadCount.findMany({
         where,
         skip,
@@ -47,9 +52,15 @@ export async function GET(request: NextRequest) {
         include: { teamMember: true },
       }),
       prisma.dailyLeadCount.count({ where }),
+      prisma.dailyLeadCount.aggregate({ where, _sum: { count: true } }),
     ]);
 
-    return NextResponse.json(serialize(buildPaginatedResponse(data, totalCount, page, limit)));
+    return NextResponse.json(
+      serialize({
+        ...buildPaginatedResponse(data, totalCount, page, limit),
+        totalLeads: sumResult._sum.count ?? 0,
+      })
+    );
   } catch (error) {
     return handleApiError(error);
   }
