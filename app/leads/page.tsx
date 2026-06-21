@@ -12,11 +12,13 @@ import { DailyLeadCountTable } from "@/components/leads/DailyLeadCountTable";
 import { useLeads, useDailyLeadCounts } from "@/hooks/useLeads";
 import { useAuth } from "@/hooks/useAuth";
 import { UserRole } from "@/types/enums";
+import type { Lead } from "@/types/database";
 
 export default function LeadsPage() {
   const { teamMember } = useAuth();
   const [filters, setFilters] = useState<LeadFiltersValue>({ search: "", status: "", source: "" });
   const [formOpen, setFormOpen] = useState(false);
+  const [editingLead, setEditingLead] = useState<Lead | undefined>(undefined);
 
   const queryFilters: Record<string, string> = { limit: "50" };
   if (filters.search) queryFilters.search = filters.search;
@@ -28,7 +30,7 @@ export default function LeadsPage() {
   const isAdmin = teamMember?.role === UserRole.ADMIN;
   const isLeadGenerator = teamMember?.role === UserRole.LEAD_GENERATOR;
   const isCloser = teamMember?.role === UserRole.SALES_CLOSER;
-  const canCreate = isAdmin || isLeadGenerator;
+  const canCreate = isAdmin || isLeadGenerator || isCloser;
   const canSeeCounts = isAdmin || isLeadGenerator || isCloser;
 
   const { data: countsData, isLoading: countsLoading } = useDailyLeadCounts();
@@ -38,7 +40,12 @@ export default function LeadsPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold">Leads</h1>
         {canCreate && (
-          <Button onClick={() => setFormOpen(true)}>
+          <Button
+            onClick={() => {
+              setEditingLead(undefined);
+              setFormOpen(true);
+            }}
+          >
             <Plus className="mr-2 h-4 w-4" />
             New Lead
           </Button>
@@ -56,7 +63,13 @@ export default function LeadsPage() {
           ))}
         </div>
       ) : (
-        <LeadsTable leads={data?.data ?? []} />
+        <LeadsTable
+          leads={data?.data ?? []}
+          onEdit={(lead) => {
+            setEditingLead(lead);
+            setFormOpen(true);
+          }}
+        />
       )}
 
       {canSeeCounts && (
@@ -74,7 +87,7 @@ export default function LeadsPage() {
         </div>
       )}
 
-      <LeadForm open={formOpen} onOpenChange={setFormOpen} />
+      <LeadForm open={formOpen} onOpenChange={setFormOpen} lead={editingLead} />
     </div>
   );
 }

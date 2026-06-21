@@ -64,7 +64,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const teamMember = await validateAuth();
-    validateRole(teamMember, [UserRole.ADMIN, UserRole.LEAD_GENERATOR]);
+    validateRole(teamMember, [UserRole.ADMIN, UserRole.LEAD_GENERATOR, UserRole.SALES_CLOSER]);
 
     const body = await request.json();
     const parsed = leadCreateSchema.parse(body);
@@ -76,6 +76,11 @@ export async function POST(request: NextRequest) {
         ? teamMember.id
         : parsed.generatedById ?? teamMember.id;
 
+    // Sales closers logging their own lead default the assignment to themselves.
+    const assignedCloserId =
+      parsed.assignedCloserId ??
+      (teamMember.role === UserRole.SALES_CLOSER ? teamMember.id : null);
+
     const lead = await prisma.lead.create({
       data: {
         clientName: parsed.clientName,
@@ -86,7 +91,7 @@ export async function POST(request: NextRequest) {
         leadSource: parsed.leadSource as any,
         leadStatus: parsed.leadStatus as any,
         notes: parsed.notes,
-        assignedCloserId: parsed.assignedCloserId,
+        assignedCloserId,
         generatedById,
       },
       include: { assignedCloser: true, generatedBy: true },

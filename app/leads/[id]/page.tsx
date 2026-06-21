@@ -67,12 +67,10 @@ export default function LeadDetailPage() {
               <Pencil className="mr-2 h-4 w-4" />
               Edit
             </Button>
-            {teamMember?.role === UserRole.ADMIN && (
-              <Button variant="destructive" onClick={handleDelete}>
-                <Trash2 className="mr-2 h-4 w-4" />
-                Delete
-              </Button>
-            )}
+            <Button variant="destructive" onClick={handleDelete}>
+              <Trash2 className="mr-2 h-4 w-4" />
+              Delete
+            </Button>
           </div>
         )}
       </div>

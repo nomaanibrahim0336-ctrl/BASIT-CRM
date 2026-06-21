@@ -1,12 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import {
-  ApiError,
-  handleApiError,
-  serialize,
-  validateAuth,
-  validateRole,
-} from "@/lib/api-utils";
+import { ApiError, handleApiError, serialize, validateAuth } from "@/lib/api-utils";
 import { leadUpdateSchema } from "@/lib/validations";
 import { UserRole } from "@/types/enums";
 
@@ -71,10 +65,11 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
 export async function DELETE(_request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const teamMember = await validateAuth();
-    validateRole(teamMember, [UserRole.ADMIN]);
 
     const existing = await prisma.lead.findUnique({ where: { id: params.id } });
     if (!existing) throw new ApiError("Lead not found", 404);
+
+    assertAccess(teamMember, existing);
 
     await prisma.lead.delete({ where: { id: params.id } });
 
